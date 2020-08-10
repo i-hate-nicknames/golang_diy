@@ -264,7 +264,60 @@ type Router interface {
 // Implement router
 
 type MyRouter struct {
-	// todo
+	paths map[string]*pathHandler
+}
+
+func MakeRouter() *MyRouter {
+	paths := make(map[string]*pathHandler, 0)
+	return &MyRouter{paths: paths}
+}
+
+type pathHandler struct {
+	middlewares []Middleware
+	handler     Handler
+	finalized   bool
+}
+
+// get path handler registered for the given path, initialize a
+// new path handler if there is none for the given path
+func (r *MyRouter) obtainPathHandler(path string) *pathHandler {
+	var p *pathHandler
+	p, ok := r.paths[path]
+	if !ok {
+		p = &pathHandler{}
+		mws := make([]Middleware, 0)
+		p.middlewares = mws
+		r.paths[path] = p
+	}
+	return p
+}
+
+func (r *MyRouter) RegisterHandler(path string, h Handler) {
+	p := r.obtainPathHandler(path)
+	finalHandler := h
+	for _, mw := range p.middlewares {
+		finalHandler = mw(finalHandler)
+	}
+	p.handler = finalHandler
+	p.finalized = true
+}
+
+func (r *MyRouter) UseMiddleware(path string, mw Middleware) {
+	p := r.obtainPathHandler(path)
+	if p.finalized {
+		panic("Cannot add middleware: handler is already registered")
+	}
+	p.middlewares = append(p.middlewares, mw)
+}
+
+func (r *MyRouter) Match(path string, data string) error {
+	var p *pathHandler
+	p, ok := r.paths[path]
+	if !ok || !p.finalized {
+		panic("not found: path is not registered")
+	}
+	fmt.Println(p.handler(data))
+	return nil
 }
 
 // todo: implement router interface
@@ -274,26 +327,22 @@ type MyRouter struct {
 func routerTask() {
 	// Initialize router as your concrete implementation
 
-	// todo: uncomment and implement
-	// var router Router
-	// router = ...
+	var router Router
+	router = MakeRouter()
 
 	// Define rootHandler as a function that does some processing
 
-	// todo: uncomment and implement
-	// var rootHandler Handler
-	// rootHandler = ...
+	var rootHandler Handler
+	rootHandler = identityHandler
 
 	// Register root handler under "/" path
 
-	// todo: uncomment when rootHandler is defined
-	// router.RegisterHandler("/", rootHandler)
+	router.RegisterHandler("/", rootHandler)
 
 	// Test router root path with different data
 
-	// todo: uncomment
-	// router.Match("/", "some text")
-	// router.Match("/", "some other text")
+	router.Match("/", "some text")
+	router.Match("/", "some other text")
 
 	// Register a path with middleware: add /revCapBangify path that reverses,
 	// capitalizes and adds "!" to the end of input strings
@@ -313,5 +362,5 @@ func routerTask() {
 func main() {
 	middlewareTask()
 	postMiddlewareTask()
-	// routerTask()
+	routerTask()
 }
