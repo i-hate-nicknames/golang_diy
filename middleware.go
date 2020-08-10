@@ -163,11 +163,15 @@ type MyRouter struct {
 	// todo
 }
 
+// todo: implement router interface
+
 // 3.2 Using router
 // Use router together with middlewares to check how it all works together
 func routerExample() {
-	// todo: initialize router as your concrete implementation
 	var router Router
+	// todo: initialize router as your concrete implementation
+	// router = makeRouter()
+
 	// todo: define rootHandler as a function
 	var rootHandler Handler
 	router.RegisterHandler("/", rootHandler)
