@@ -22,6 +22,7 @@ func doubleHandler(in string) string {
 // Implement the following handlers:
 
 // a constant handler that ignores input and always returns a constant
+
 func constHandler(in string) string {
 	return "kurwa"
 }
@@ -82,6 +83,8 @@ func revBangHandler(in string) string {
 func revCapHandler(in string) string {
 	return reverse(reverseWords(in))
 }
+
+// todo: declare and implement
 
 func handlersTask() {
 	// todo: test your handlers here
@@ -152,7 +155,7 @@ func reverseWordsMw(h Handler) Handler {
 	})
 }
 
-// middleware factory: implement a function that returns a middleware.
+// Middleware factory: implement a function that returns a middleware.
 // The function should take a string s and
 // return a middleware that will return a handler that will append s
 // to every input and pass the result to the original handler
@@ -211,16 +214,28 @@ func middlewareTask() {
 // (input) -> h -> r -> q -> p -> (output)
 
 func postMiddlewareTask() {
-	// create a handler that adds "..." to the end of its input
+	// Create a handler that adds "..." to the end of its input
 
-	// todo: implement
+	// todo: uncomment and implement
 	// var ellipsify Handler
 	// ellipsify = ...
 
-	// define orNot middleware that returns a handler that first calls provided handler, and then appends
+	// Define orNot middleware that returns a handler that first calls provided handler, and then appends
 	// "or not?" string to the end
-	// create a handler that adds "..." to the end of its input, and then apply orNot middleware to it to
-	// obtain a handler that adds "...or not?". Observe how you have to use a "post" middleware in this case
+
+	// todo: uncomment and implement
+	// var orNotMw Middleware
+	// orNotMw = ...
+
+	// Obtain a handler that adds "...or not?" by using ellipsify with orNotMw.
+	// Observe that orNot has to be a "post" middleware in this case
+
+	// todo: uncomment and implement
+	// var doubtfulHandler Handler
+	// doubtfulHandler = ...
+
+	// todo: uncomment and test your handler
+	// fmt.Println(doubtfulHandler("test"))
 }
 
 // 3 Router
@@ -254,19 +269,42 @@ type MyRouter struct {
 // 3.2 Using router
 // Use router together with middlewares to check how it all works together
 func routerTask() {
-	var router Router
-	// todo: initialize router as your concrete implementation
-	// router = makeRouter()
+	// Initialize router as your concrete implementation
 
-	// todo: define rootHandler as a function
-	var rootHandler Handler
-	router.RegisterHandler("/", rootHandler)
-	// using root path with some data
-	router.Match("/", "some text")
-	router.Match("/", "some other text")
-	// todo: register more paths and use middlewares
-	// for example define /revCapBangify path that
-	// reverses, capitalizes and adds "!" to the end of input strings
+	// todo: uncomment and implement
+	// var router Router
+	// router = ...
+
+	// Define rootHandler as a function that does some processing
+
+	// todo: uncomment and implement
+	// var rootHandler Handler
+	// rootHandler = ...
+
+	// Register root handler under "/" path
+
+	// todo: uncomment when rootHandler is defined
+	// router.RegisterHandler("/", rootHandler)
+
+	// Test router root path with different data
+
+	// todo: uncomment
+	// router.Match("/", "some text")
+	// router.Match("/", "some other text")
+
+	// Register a path with middleware: add /revCapBangify path that reverses,
+	// capitalizes and adds "!" to the end of input strings
+
+	// todo: uncomment and implement
+	// router.UseMiddleware("/revCapBangify", ...)
+	// router.UseMiddleware("/revCapBangify", ...)
+	// router.RegisterHandler("/revCapBangify", identityHandler)
+
+	// Test /revCapBangify path
+
+	// todo: uncomment
+	// router.Match("/revCapBangify", "some text")
+	// router.Match("/revCapBangify", "some other text")
 }
 
 func main() {
