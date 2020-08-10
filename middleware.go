@@ -84,8 +84,6 @@ func revCapHandler(in string) string {
 	return reverse(reverseWords(in))
 }
 
-// todo: declare and implement
-
 func handlersTask() {
 	// todo: test your handlers here
 	// fmt.Println(constant("test"))
@@ -173,31 +171,34 @@ func middlewareTask() {
 	// Use DoubleMiddleware and identity handler to define quad handler: a handler that repeats its input
 	// four times
 
-	// todo: uncomment and implement
 	var quadHandler Handler
 	quadHandler = doubleMiddleware(doubleMiddleware(identityHandler))
 
 	// Reimplement handlers from 1.2 using only middlewares from 2.1 and identity handler from 1.1. Do not define
 	// any new handlers with func and do not use handlers from 1.2
 
-	// todo: uncomment and implement
-	// var capt, captBang, rev, revBang, revCap Handler
-	// capt = ...
-	// captBang = ...
+	var capt, captBang, rev, revBang, revCap Handler
+	capt = capitalizeMw(identityHandler)
+	captBang = capitalizeMw(bangifyMw(identityHandler))
+	rev = reverseMw(identityHandler)
+	revBang = reverseMw(bangifyMw(identityHandler))
+	revCap = reverseMw(capitalizeMw(identityHandler))
 
-	// todo: uncomment and test your handlers
 	fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler("test"))
+	fmt.Printf("capt in: %s, capt out: %s\n", "test", capt("test"))
+	fmt.Printf("captBang in: %s, quad out: %s\n", "test", captBang("test"))
+	fmt.Printf("rev in: %s, quad out: %s\n", "test", rev("test"))
+	fmt.Printf("revBang in: %s, quad out: %s\n", "test", revBang("test"))
+	fmt.Printf("revCap in: %s, quad out: %s\n", "test", revCap("test"))
 
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
 
-	// todo: uncomment and implement
-	// var questionizeMw Middleware
-	// questionizeMw = ...
+	var questionizeMw Middleware
+	questionizeMw = makeAppender("?")
 
-	// todo: use and test questionize middleware with some handler and optionally other middlewares
-	// var q Handler = questionizeMw(...)
-	// fmt.Printf(q("test string"))
+	var q Handler = questionizeMw(bangifyMw(identityHandler))
+	fmt.Printf(q("test string") + "\n")
 
 }
 
@@ -216,26 +217,28 @@ func middlewareTask() {
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
 
-	// todo: uncomment and implement
-	// var ellipsify Handler
-	// ellipsify = ...
+	var ellipsify Handler
+	ellipsify = func(in string) string {
+		return in + "..."
+	}
 
 	// Define orNot middleware that returns a handler that first calls provided handler, and then appends
 	// "or not?" string to the end
 
-	// todo: uncomment and implement
-	// var orNotMw Middleware
-	// orNotMw = ...
+	var orNotMw Middleware
+	orNotMw = Middleware(func(h Handler) Handler {
+		return Handler(func(in string) string {
+			return h(in) + "or not?"
+		})
+	})
 
 	// Obtain a handler that adds "...or not?" by using ellipsify with orNotMw.
 	// Observe that orNot has to be a "post" middleware in this case
 
-	// todo: uncomment and implement
-	// var doubtfulHandler Handler
-	// doubtfulHandler = ...
+	var doubtfulHandler Handler
+	doubtfulHandler = orNotMw(ellipsify)
 
-	// todo: uncomment and test your handler
-	// fmt.Println(doubtfulHandler("test"))
+	fmt.Println(doubtfulHandler("test"))
 }
 
 // 3 Router
@@ -310,5 +313,5 @@ func routerTask() {
 func main() {
 	middlewareTask()
 	postMiddlewareTask()
-	routerTask()
+	// routerTask()
 }
