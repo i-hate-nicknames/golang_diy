@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 // Implement a simple routing system that matches paths exactly,
 // and allows to register a handler function for each path
 
@@ -17,24 +19,66 @@ func doubleHandler(in string) string {
 // Implement the following handlers:
 
 // a constant handler that ignores input and always returns a constant
-// constant("a") -> "kurwa"
-// constant("b") -> "kurwa"
+func constHandler(in string) string {
+	return "kurwa"
+}
 
 // an identity handler that returns input as output
-// identity("a") -> "a"
-// identity("b") -> "b"
+func identityHandler(in string) string {
+	return in
+}
 
 // a handler that appends some data to input:
-// h("a") -> "a!"
-// h("b") -> "b!"
+func appendBangHandler(in string) string {
+	return in + "!"
+}
 
 // 1.2 Advanced handlers
 // Implement the following handlers using function definitions:
 // captHandler -> capitalizes input
+func captHandler(in string) string {
+	return strings.ToUpper(in)
+}
+
 // captBangHandler -> capitalizes input and adds "!" to the end
+func captBangHandler(in string) string {
+	return strings.ToUpper(in) + "!"
+}
+
+func reverse(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}
+
+// reverse order of words in s, assume words are space separated
+func reverseWords(s string) string {
+	words := strings.Fields(s)
+	result := ""
+	// inefficient but whatever
+	for i := len(words) - 1; i >= 0; i-- {
+		result += words[i]
+	}
+	return result
+}
+
 // revHandler -> reverses input
+func revHandler(in string) string {
+	return reverse(in)
+}
+
 // revBangHandler -> reverses input and adds "!" to the end
-// revCapHandler -> reverses order of letters in every word of the input
+func revBangHandler(in string) string {
+	return reverse(in) + "!"
+}
+
+// revCapHandler -> reverses order of letters in every word of the input,
+// assume the words are space separated
+func revCapHandler(in string) string {
+	return reverse(reverseWords(in))
+}
 
 // 2. Middleware
 
@@ -64,30 +108,50 @@ func doubleMiddleware(h Handler) Handler {
 // const middleware that returns a handler that ignores its input and always
 // returns some constant string
 func constMw(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return "a"
+	})
 }
 
 // capitalize middleware that returns a handler that capitalizes input and then calls given handler on the result
 func capitalizeMw(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(strings.ToUpper(in))
+	})
 }
 
 // bangify middleware that returns a handler that adds a "!" to the end of its input and then calls given handler on the result
-// todo: declare implement
+func bangifyMw(h Handler) Handler {
+	return Handler(func(in string) string {
+		return h(in + "!")
+	})
+}
 
 // reverse middleware that returns a handler that reverses its input and then calls given handler on the result
-// todo: declare and implement
+func reverseMw(h Handler) Handler {
+	return Handler(func(in string) string {
+		return h(reverse(in))
+	})
+}
 
 // reverseWords middleware that returns a handler that reverses each word in the input and then calls given handler on the result
 // strings with number of words <= 1 are not modified
-// todo: declare and implement
+func reverseWordsMw(h Handler) Handler {
+	return Handler(func(in string) string {
+		return h(reverseWords(in))
+	})
+}
 
 // middleware factory: implement a function that returns a middleware.
 // The function should take a string s and
 // return a middleware that will return a handler that will append s
 // to every input and pass the result to the original handler
 func makeAppender(s string) Middleware {
-	panic("not implemented")
+	return Middleware(func(h Handler) Handler {
+		return Handler(func(in string) string {
+			return h(in + s)
+		})
+	})
 }
 
 // 2.2 Using middlewares
