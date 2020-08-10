@@ -110,6 +110,18 @@ func middlewareTask() {
 
 	// todo: uncomment and test your handlers
 	// fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler(test))
+
+	// Implement questionize middleware using makeAppender. This middleware
+	// should append "?" to input before calling passed handler
+
+	// todo: uncomment and implement
+	// var questionizeMw Middleware
+	// questionizeMw = ...
+
+	// todo: use and test questionize middleware with some handler and optionally other middlewares
+	// var q Handler = questionizeMw(...)
+	// fmt.Printf(q("test string"))
+
 }
 
 // 2.3 Pre and post middlewares
