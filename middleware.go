@@ -80,6 +80,13 @@ func revCapHandler(in string) string {
 	return reverse(reverseWords(in))
 }
 
+func handlersTask() {
+	// todo: test your handlers here
+	// fmt.Println(constant("test"))
+	// fmt.Println(identity("test"))
+	// ...
+}
+
 // 2. Middleware
 
 // You cannot compose handlers: there should be only one handler for a given
@@ -173,7 +180,8 @@ func middlewareTask() {
 	// captBang = ...
 
 	// todo: uncomment and test your handlers
-	// fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler(test))
+	// fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler("test"))
+	// ...
 
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
@@ -243,7 +251,7 @@ type MyRouter struct {
 
 // 3.2 Using router
 // Use router together with middlewares to check how it all works together
-func routerExample() {
+func routerTask() {
 	var router Router
 	// todo: initialize router as your concrete implementation
 	// router = makeRouter()
@@ -260,5 +268,7 @@ func routerExample() {
 }
 
 func main() {
-	routerExample()
+	middlewareTask()
+	postMiddlewareTask()
+	routerTask()
 }
