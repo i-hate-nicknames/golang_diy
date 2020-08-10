@@ -295,7 +295,10 @@ func (r *MyRouter) obtainPathHandler(path string) *pathHandler {
 func (r *MyRouter) RegisterHandler(path string, h Handler) {
 	p := r.obtainPathHandler(path)
 	finalHandler := h
-	for _, mw := range p.middlewares {
+	// apply middlewares in reverse, to mimic the order in which
+	// they were registered
+	for i := len(p.middlewares) - 1; i >= 0; i-- {
+		mw := p.middlewares[i]
 		finalHandler = mw(finalHandler)
 	}
 	p.handler = finalHandler
@@ -347,16 +350,15 @@ func routerTask() {
 	// Register a path with middleware: add /revCapBangify path that reverses,
 	// capitalizes and adds "!" to the end of input strings
 
-	// todo: uncomment and implement
-	// router.UseMiddleware("/revCapBangify", ...)
-	// router.UseMiddleware("/revCapBangify", ...)
-	// router.RegisterHandler("/revCapBangify", identityHandler)
+	router.UseMiddleware("/revCapBangify", reverseMw)
+	router.UseMiddleware("/revCapBangify", capitalizeMw)
+	router.UseMiddleware("/revCapBangify", bangifyMw)
+	router.RegisterHandler("/revCapBangify", identityHandler)
 
 	// Test /revCapBangify path
 
-	// todo: uncomment
-	// router.Match("/revCapBangify", "some text")
-	// router.Match("/revCapBangify", "some other text")
+	router.Match("/revCapBangify", "some text")
+	router.Match("/revCapBangify", "some other text")
 }
 
 func main() {
