@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // Implement a simple routing system that matches paths exactly,
 // and allows to register a handler function for each path
@@ -168,8 +171,8 @@ func middlewareTask() {
 	// four times
 
 	// todo: uncomment and implement
-	// var quadHandler Handler
-	// quadHandler = ...
+	var quadHandler Handler
+	quadHandler = doubleMiddleware(doubleMiddleware(identityHandler))
 
 	// Reimplement handlers from 1.2 using only middlewares from 2.1 and identity handler from 1.1. Do not define
 	// any new handlers with func and do not use handlers from 1.2
@@ -180,8 +183,7 @@ func middlewareTask() {
 	// captBang = ...
 
 	// todo: uncomment and test your handlers
-	// fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler("test"))
-	// ...
+	fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler("test"))
 
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
