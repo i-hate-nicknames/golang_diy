@@ -70,7 +70,7 @@ func CapitalizeBangHandler(s string, capitalize Handler, append Handler) string 
 var ReverseHandler Handler = func(s string) string {
 	runes := []rune(s)
 
-	for i, j := len(runes) - 1, 0; i < j; i, j = i + 1, j - 1 {
+	for i, j := 0, len(runes) - 1; i < j; i, j = i + 1, j - 1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
 
@@ -82,6 +82,13 @@ func ReverseBang(s string, reverse, bang Handler) string {
 	reversed := reverse(s)
 
 	return bang(reversed)
+}
+
+// revCapHandler -> reverses order of letters in every word of the input
+func ReverseCapitalize(s string, reverse, capitalize Handler) string {
+	reversed := reverse(s)
+
+	return capitalize(reversed)
 }
 
 
