@@ -77,6 +77,14 @@ var ReverseHandler Handler = func(s string) string {
 	return string(runes)
 }
 
+// revBangHandler -> reverses input and adds "!" to the end
+func ReverseBang(s string, reverse, bang Handler) string {
+	reversed := reverse(s)
+
+	return bang(reversed)
+}
+
+
 func handlersTask() {
 	// todo: test your handlers here
 	// fmt.Println(constant("test"))
