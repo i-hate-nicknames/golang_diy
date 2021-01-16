@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 // 1. Handlers
 
 // Handler processes request string and returns a (possibly modified) string
@@ -35,7 +37,15 @@ var Identity Handler = func(str string) string {
 // a handler that appends some data to input:
 // h("a") -> "a!"
 // h("b") -> "b!"
-// todo: declare and implement
+
+var Append Handler = func(s string) string {
+	const appendix = "!"
+	var str strings.Builder
+	str.WriteString(s)
+	str.WriteString(appendix)
+
+	return str.String()
+}
 
 // 1.2 Advanced handlers
 // Implement the following handlers using function definitions:
