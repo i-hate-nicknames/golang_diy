@@ -28,6 +28,10 @@ var Constant Handler = func(str string) string {
 // identity("b") -> "b"
 // todo: declare and implement
 
+var Identity Handler = func(str string) string {
+	return str
+}
+
 // a handler that appends some data to input:
 // h("a") -> "a!"
 // h("b") -> "b!"
