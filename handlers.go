@@ -66,6 +66,17 @@ func CapitalizeBangHandler(s string, capitalize Handler, append Handler) string 
 	return banged
 }
 
+// revHandler -> reverses input
+var ReverseHandler Handler = func(s string) string {
+	runes := []rune(s)
+
+	for i, j := len(runes) - 1, 0; i < j; i, j = i + 1, j - 1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	return string(runes)
+}
+
 func handlersTask() {
 	// todo: test your handlers here
 	// fmt.Println(constant("test"))
