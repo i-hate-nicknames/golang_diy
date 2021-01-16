@@ -41,8 +41,8 @@ var Identity Handler = func(str string) string {
 var Append Handler = func(s string) string {
 	const appendix = "!"
 	var str strings.Builder
-	str.WriteString(s)
-	str.WriteString(appendix)
+	in := append([]byte(s), []byte(appendix)...)
+	str.Write(in)
 
 	return str.String()
 }
@@ -55,7 +55,16 @@ var Append Handler = func(s string) string {
 // revBangHandler -> reverses input and adds "!" to the end
 // revCapHandler -> reverses order of letters in every word of the input
 
-// todo: declare and implement
+var CapitalizeHandler Handler = func(s string) string {
+	return strings.Title(s)
+}
+
+func CapitalizeBangHandler(s string, capitalize Handler, append Handler) string {
+	capitalized := capitalize(s)
+	banged := append(capitalized)
+
+	return banged
+}
 
 func handlersTask() {
 	// todo: test your handlers here
