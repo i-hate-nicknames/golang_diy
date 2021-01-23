@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // 1. Handlers
 
@@ -92,9 +95,14 @@ func ReverseCapitalize(s string, reverse, capitalize Handler) string {
 }
 
 
-func handlersTask() {
-	// todo: test your handlers here
-	// fmt.Println(constant("test"))
-	// fmt.Println(identity("test"))
-	// ...
+func HandlersTask() {
+	const testString = "Kurwa cum back"
+	fmt.Println(Constant(testString))
+	fmt.Println(Identity(testString))
+	fmt.Println(Append(testString))
+	fmt.Println(CapitalizeHandler(testString))
+	fmt.Println(ReverseHandler(testString))
+	fmt.Println(CapitalizeBangHandler(testString, CapitalizeHandler, Append))
+	fmt.Println(ReverseBang(testString, ReverseHandler, Append))
+	fmt.Println(ReverseBang(testString, ReverseHandler, CapitalizeHandler))
 }
