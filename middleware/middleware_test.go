@@ -36,6 +36,45 @@ func TestHandlers(t *testing.T) {
 	}
 	runHandlerTests("appendBangHandler", appendBangHandler, abangTests)
 
-	// todo: add remaining handler tests
+	captTests := []handlerTest{
+		{"a", "A"},
+		{"test", "Test"},
+		{"!!!", "!!!"},
+	}
+	runHandlerTests("captHandler", captHandler, captTests)
 
+	captBangTests := []handlerTest{
+		{"a", "A!"},
+		{"test", "Test!"},
+		{"!!!", "!!!!"},
+	}
+	runHandlerTests("captBangHandler", captBangHandler, captBangTests)
+
+	revTests := []handlerTest{
+		{"a", "a"},
+		{"", ""},
+		{"kurwa", "awruk"},
+	}
+	runHandlerTests("revHandler", revHandler, revTests)
+
+	revBangTests := []handlerTest{
+		{"a", "a!"},
+		{"", "!"},
+		{"kurwa", "awruk!"},
+	}
+	runHandlerTests("revBangHandler", revBangHandler, revBangTests)
+
+	revCaptTests := []handlerTest{
+		{"a", "A"},
+		{"", ""},
+		{"abc", "Cba"},
+	}
+	runHandlerTests("revCaptHandler", revCaptHandler, revCaptTests)
+
+	captRevBangTests := []handlerTest{
+		{"a", "A!"},
+		{"", "!"},
+		{"abc", "cbA!"},
+	}
+	runHandlerTests("captRevBangHandler", captRevBangHandler, captRevBangTests)
 }
