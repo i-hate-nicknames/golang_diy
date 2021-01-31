@@ -1,14 +1,76 @@
-package main
+package middleware
 
-// Implement a simple routing system that matches paths exactly,
-// and allows to register a handler function for each path
+// TODO: move most of the prose to markdown, leave only implementation-related text
 
-// 1. Handlers
+// This guide walks through the implementation of a simple routing system, that is often used in
+// web development, but is not limited to it. It includes exercises that are automatically tested.
+// To check the correctness of your implementation run go test ./... in this directory
 
-// Handler processes request string and returns a (possibly modified) string
+// The goal of a routing system is to process incoming requests, and based on some set of rules
+// process these requests. Routing system helps decoupling the processing part from the rule part.
+// Additionally, it helps with processing organization by adding a powerful concept of middlewares.
+
+// Imagine a simple routing system that sorts balls by color.
+// It should put green balls in box G, and red balls in box R.
+// Assume no other balls can come in
+
+// Main components of routing system are requests, route matchers and handlers.
+
+// Request is something that comes in our system from the outside. In web development it's
+// some representation of an http request, in our ball machine example requests are balls.
+// In this guide a request will be a pair of strings: a path and data, which represents some
+// client sending given data to a given path.
+type Request struct {
+	Path, Data string
+}
+
+// Route matcher gets a request and checks if this request is matched. I.e. it answers a yes/no
+// question, and can be summarized as a function that takes a request and returns a boolean
+
+// In the balls example, it is a part of the system that checks balls for color.
+// In this system we have two matchers: one for green balls and one for red balls.
+
+// In this guide, routing rules will be simple strings, that match paths exactly. I.e. a routing
+// rule "test" will match all incoming requests that have Path set to "test".
+// A more flexible system might want to use a matcher type that will allow adding
+// custom logic to the match system
+
+// Matcher type is not used, and is here for illustration purposes. We use strings and match path exactly.
+type Matcher func(Request) bool
+
+// A handler is a function that takes a request and then does some work on it. In web development
+// it usually operates on http response. In our example we have two handlers: green handler and red hander.
+// Green handler takes a ball, and puts it in G box, red handler puts the incoming ball to the R box.
+// The important part: handlers are dumb, they do not know the color of incoming ball, they just
+// put it where they are programmed to.
+
+// Handler in this guide handlers will operate on the underlying string data, instead on the requests
+// themselves, and will return their results as strings. This is done for brevity and is not crucial
+// for conceptual understanding of a routing system.
 type Handler func(string) string
 
-// DouleHandler doubles its input
+// Important note: for every rule in the routing system there is exactly one handler. Imagine if you want
+// to register multiple handlers. There can be two possible reasons for this:
+// 1. You want all those handlers to run. In this case, you will have to make a new handler, that will
+// encapsulate all the logic you want. You can make such handler yourself, or abstract the logic to
+// middleware (more on those in Middleware section of this guide)
+// 2. You want only some of the handlers to run. In this case, the logic that decides if a handler
+// is executed should be moved to the rule part, and the handlers themselves grouped differently under
+// new rules.
+
+// Lifetime of a routing system can be divided in two phases: configuration time and run time.
+// At configuration time, a programmer specifies routing rules, together with processing "attached"
+// to each rule.
+// At run time, requests come into the routing system, and routing system forwards these
+// requests according to the rules it was given at configuration time.
+
+// Note: nothing prevents adding/removing rules at runtime too, but for the vast majority of cases
+// it happens at configuration time
+
+// Handler tasks
+
+// douleHandler doubles its input
+// this is an example
 func doubleHandler(in string) string {
 	return in + in
 }
@@ -268,10 +330,4 @@ func routerTask() {
 	// todo: uncomment
 	// router.Match("/revCapBangify", "some text")
 	// router.Match("/revCapBangify", "some other text")
-}
-
-func main() {
-	middlewareTask()
-	postMiddlewareTask()
-	routerTask()
 }
