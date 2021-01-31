@@ -67,7 +67,8 @@ type Handler func(string) string
 // Note: nothing prevents adding/removing rules at runtime too, but for the vast majority of cases
 // it happens at configuration time
 
-// Handler tasks
+// To follow this guide, do not change types of anything. Remove panics with your implementation
+// and run tests
 
 // douleHandler doubles its input
 // this is an example
@@ -104,6 +105,9 @@ func appendBangHandler(in string) string {
 // Here and further, capitalization is making first letter of the text to be uppercase
 // "test" -> "Test"
 
+// Similarity between handlers is intended. To avoid code repetition,
+// you may want to call previously defined handlers in your other handlers
+
 // captHandler capitalizes input
 func captHandler(in string) string {
 	panic("not implemented")
@@ -134,16 +138,32 @@ func captRevBangHandler(in string) string {
 	panic("not implemented")
 }
 
-// 2. Middleware
+// 2. Middlewares
 
-// You cannot compose handlers: there should be only one handler for a given
-// request. Instead, you create middlewares: a function that takes a handler
-// and returns another handler. It can mix in its own functionality, while retaining
-// original handler functionality by calling it directly on the input
+// Handlers are functions that take strings and return strings. Naturally, they can be composed,
+// to produce new handlers. You probably notices this when implementing handlers in previous section.
+// If you implemented all your handlers from scratch, I advise you to go back and try to rewrite them
+// using existing handlers.
+// In general, if you have two handlers f and g, and want to create a new handler h that uses first f,
+// and then g on the input, you can do it as follows
+// h := func (in string) string { return g(f(in)) }
 
-// Middleware takes a handler h1 and returns another handler h2.
-// To extend h1 functionality, call h1 internally and use its result,
-// to replace h1 completely just do not use it in h2
+// However, this is cumbersome. Each time you want to add functionality to an existing handler, you
+// need to create a new handler.
+// The solution is middlewares. Basically, middlewares facilitate creation of handlers, and allow mixing
+// their own logic with the logic of an existing handler.
+// In routing systems, middlewares act as plugins that you can install for a particular route, but the route
+// still needs a handler.
+// Middlewares are one level above handlers: while handlers operate on requests, middlewares operate on handlers.
+// Middleware takes a handler, and modifies it to add it's own logic. Since it cannot inject its own code
+// inside a handler, the only solution is to create a  _new_ handler, that will call the original handler,
+// plus do some work.
+// This way, the resulting handler can retain the original functionality (from the passed handler),
+// while also add its own functionality.
+
+// Middleware takes a handler h and returns another handler.
+// To extend h1 functionality, call h internally and use its result,
+// to replace h1 completely just do not use h at all
 type Middleware func(Handler) Handler
 
 // Double middleware returns a handler, that doubles its input and then
@@ -155,6 +175,7 @@ func doubleMiddleware(h Handler) Handler {
 }
 
 // Question: what is the difference between double handler and double middleware?
+// Look at their type signatures, and consider how each can be used.
 
 // 2.1 Defining middlewares
 // Implement the following middlewares:
@@ -182,6 +203,12 @@ func capitalizeMw(h Handler) Handler {
 // strings with number of words <= 1 are not modified
 // todo: declare and implement
 
+// compose middleware takes many handlers, and applies each from left to right. Remember when someone said
+// you can only use one handler per route? Pfff.
+func composeMiddleware(h ...Handler) Handler {
+	panic("not implemented")
+}
+
 // Middleware factory: implement a function that returns a middleware.
 // The function should take a string s and
 // return a middleware that will return a handler that will append s
@@ -191,8 +218,7 @@ func makeAppender(s string) Middleware {
 	panic("not implemented")
 }
 
-// 2.2 Using middlewares
-
+// TODO: move to tests
 func middlewareTask() {
 	// Use DoubleMiddleware and identity handler to define quad handler: a handler that repeats its input
 	// four times
@@ -237,7 +263,16 @@ func middlewareTask() {
 // So, for some handler h, if p, q and r are post middlewares, and we apply them again in the same order
 // h' = p(q(r(h))), the order of computation will be the following:
 // (input) -> h -> r -> q -> p -> (output)
+// The third option might be an "around" middleware, that runs something both before and after everything
+// it was passed. It's somewhat more rare than the other two. One example might be logging the time it
+// takes to run passed handler
 
+// So here comes another application of middlewares: you can import a middleware from a library, and you
+// don't have to think about order of computation, it's already encapsulated in the middleware.
+// If you import raw functions from a library and make your own handlers with them, you would have to
+// decide where the logic should go.
+
+// TODO: move to tests, add definitions
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
 
@@ -261,6 +296,28 @@ func postMiddlewareTask() {
 
 	// todo: uncomment and test your handler
 	// fmt.Println(doubtfulHandler("test"))
+}
+
+// To sum up
+// A middleware is a function that takes a handler and constructs another handler
+func exampleMiddleware(h Handler) Handler {
+	// the logic here will be executed at configuration time, when this middleware is registered
+	// Typically, not much happens here, because we only have access to the original handler,
+	// and to global scope
+	return Handler(func(request string) string {
+		// The code here will be executed at run time, when a request is matched to the route this
+		// middleware is registered on
+		// the request may have been modified by previous middlewares, but as a middleware builder
+		// this should not concern us.
+		// The typical logic here would be to put some information inside request or some request context,
+		// instead of modifying the request
+		// Here, we are in charge of what goes down the chain: we can ignore the request, pass it as it is,
+		// modify it, write to log. We can prevent the original handler from running, if we want to.
+
+		// In this case we do nothing, effectively making our middleware redundant.
+		// Make sure you understand why "do nothing" means "return h(request)" and not "return request"
+		return h(request)
+	})
 }
 
 // 3 Router
@@ -293,6 +350,7 @@ type MyRouter struct {
 
 // 3.2 Using router
 // Use router together with middlewares to check how it all works together
+// TODO: move to tests
 func routerTask() {
 	// Initialize router as your concrete implementation
 
