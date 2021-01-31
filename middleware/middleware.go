@@ -17,35 +17,59 @@ func doubleHandler(in string) string {
 // Implement the following handlers:
 
 // a constant handler that ignores input and always returns a constant
-// constant("a") -> "kurwa"
-// constant("b") -> "kurwa"
-// todo: declare and implement
+// constantHandler("a") -> "kurwa"
+// constantHandler("b") -> "kurwa"
+func constantHandler(in string) string {
+	panic("not implemented")
+}
 
 // an identity handler that returns input as output
-// identity("a") -> "a"
-// identity("b") -> "b"
-// todo: declare and implement
+// identityHander("a") -> "a"
+// identityHander("b") -> "b"
+func identityHander(in string) string {
+	panic("not implemented")
+}
 
-// a handler that appends some data to input:
+// a handler that appends an exclamation mark to input:
 // h("a") -> "a!"
 // h("b") -> "b!"
-// todo: declare and implement
+func appendBangHandler(in string) string {
+	panic("not implemented")
+}
 
 // 1.2 Advanced handlers
 // Implement the following handlers using function definitions:
-// captHandler -> capitalizes input
-// captBangHandler -> capitalizes input and adds "!" to the end
-// revHandler -> reverses input
-// revBangHandler -> reverses input and adds "!" to the end
-// revCapHandler -> reverses order of letters in every word of the input
+// Here and further, capitalization is making first letter of the text to be uppercase
+// "test" -> "Test"
 
-// todo: declare and implement
+// captHandler capitalizes input
+func captHandler(in string) string {
+	panic("not implemented")
+}
 
-func handlersTask() {
-	// todo: test your handlers here
-	// fmt.Println(constant("test"))
-	// fmt.Println(identity("test"))
-	// ...
+// captBangHandler capitalizes input and adds "!" to the end
+func captBangHandler(in string) string {
+	panic("not implemented")
+}
+
+// revHandler reverses input
+func revHandler(in string) string {
+	panic("not implemented")
+}
+
+// revBangHandler reverses input and adds "!" to the end
+func revBangHandler(in string) string {
+	panic("not implemented")
+}
+
+// revCaptHandler reverses order of letters in every word of the input
+func revCaptHandler(in string) string {
+	panic("not implemented")
+}
+
+// revCapBangHandler: capitalizes input, then reverses it and then adds "!" to the end
+func captRevBangHandler(in string) string {
+	panic("not implemented")
 }
 
 // 2. Middleware
