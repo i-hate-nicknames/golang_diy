@@ -181,3 +181,7 @@ func TestMiddlewares(t *testing.T) {
 	runMWTests("makeAppender", double, appender, appenderTestsDbl)
 
 }
+
+func TestUsingMiddlewares(t *testing.T) {
+
+}

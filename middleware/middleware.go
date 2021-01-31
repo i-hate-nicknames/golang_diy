@@ -87,9 +87,9 @@ func constantHandler(in string) string {
 }
 
 // an identity handler that returns input as output
-// identityHander("a") -> "a"
-// identityHander("b") -> "b"
-func identityHander(in string) string {
+// identityHandler("a") -> "a"
+// identityHandler("b") -> "b"
+func identityHandler(in string) string {
 	panic("not implemented")
 }
 
@@ -106,7 +106,8 @@ func appendBangHandler(in string) string {
 // "test" -> "Test"
 
 // Similarity between handlers is intended. To avoid code repetition,
-// you may want to call previously defined handlers in your other handlers
+// you may want to call previously defined handlers in your other handlers. There is a better
+// way to do this, using middlewares, that is explained in middleware section
 
 // captHandler capitalizes input
 func captHandler(in string) string {
@@ -217,38 +218,57 @@ func makeAppender(s string) Middleware {
 	panic("not implemented")
 }
 
-// TODO: move to tests
-func middlewareTask() {
-	// Use DoubleMiddleware and identity handler to define quad handler: a handler that repeats its input
-	// four times
+// Middlewares are used by routing system, to mix in functionality. However, to understand them
+// better it might be helpful to run them directly.
+// Let's make some handlers by manually calling middlewares. Functionality of these handlers
+// resembles what we already implemented in the handlers section. This is intentional, to show
+// a different and more compact way handlers can be defined, when common functionality is abscracted
+// into middlewares.
+// Consequently, when defining handlers in this section you SHOULD NOT use any other existing handlers or
+// helper functions, or define any new handlers the regular way.
+// The only handler you need is identityHandler, everything else should be implemented by existing middlewares
+
+// top-level definitions so that tests can see them
+var quadHandler Handler
+var captH, capthBangH, revH, revBangH, revCaptH, captRevBangH Handler
+var questionizeMw Middleware
+
+// uncomment and implement all assignments in this function
+func usingMWTask() {
+	// Use DoubleMiddleware and identity handler to define quad handler:
+	// a handler that repeats its input four times
 
 	// todo: uncomment and implement
-	// var quadHandler Handler
 	// quadHandler = ...
 
-	// Reimplement handlers from 1.2 using only middlewares from 2.1 and identity handler from 1.1. Do not define
-	// any new handlers with func and do not use handlers from 1.2
-
+	// Capitalize handler capitalizes its input
 	// todo: uncomment and implement
-	// var capt, captBang, rev, revBang, revCap Handler
-	// capt = ...
+	// captH = ...
+
+	// Capitalize Bang handler capitalizes its input  and adds "!" to the end
+	// todo: uncomment and implement
 	// captBang = ...
 
-	// todo: uncomment and test your handlers
-	// fmt.Printf("quad in: %s, quad out: %s\n", "test", quadHandler("test"))
-	// ...
+	// Reverse handler reverses its input
+	// todo: uncomment and implement
+	// revH = ...
+
+	// Reverse Bang handler reverses its input and then adds "!" to the end
+	// todo: uncomment and implement
+	// revBangH = ...
+
+	// Reverse Capitalize handler reverses its input and then capitalizes it
+	// todo: uncomment and implement
+	// revCaptH = ...
+
+	// Capitalize Reverse Bang handler capitalizes its input, then reverses it
+	// and then adds "!" to the end
+	// captRevBangH = ...
 
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
-
 	// todo: uncomment and implement
-	// var questionizeMw Middleware
 	// questionizeMw = ...
-
-	// todo: use and test questionize middleware with some handler and optionally other middlewares
-	// var q Handler = questionizeMw(...)
-	// fmt.Printf(q("test string"))
-
 }
 
 // 2.3 Pre and post middlewares
