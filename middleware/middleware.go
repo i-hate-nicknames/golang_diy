@@ -181,30 +181,29 @@ func doubleMiddleware(h Handler) Handler {
 // Implement the following middlewares:
 
 // const middleware that returns a handler that ignores its input and always
-// returns some constant string
-func constMw(h Handler) Handler {
-	// todo: implement
+// returns string "kurwa"
+func constMiddleware(h Handler) Handler {
 	panic("not implemented")
 }
 
-// capitalize middleware that returns a handler that capitalizes input and then calls given handler on the result
-func capitalizeMw(h Handler) Handler {
-	// todo: implement
+// capitalizeMiddleware returns a handler that capitalizes input and then calls given handler on the result
+func capitalizeMiddleware(h Handler) Handler {
 	panic("not implemented")
 }
 
-// bangify middleware that returns a handler that adds a "!" to the end of its input and then calls given handler on the result
-// todo: declare implement
+// bangifyMiddleware returns a handler that adds a "!" to the end of its input and then calls given handler on the result
+func bangifyMiddleware(h Handler) Handler {
+	panic("not implemented")
+}
 
-// reverse middleware that returns a handler that reverses its input and then calls given handler on the result
-// todo: declare and implement
+// reverseMiddleware returns a handler that reverses its input and then calls given handler on the result
+func reverseMiddleware(h Handler) Handler {
+	panic("not implemented")
+}
 
-// reverseWords middleware that returns a handler that reverses each word in the input and then calls given handler on the result
-// strings with number of words <= 1 are not modified
-// todo: declare and implement
-
-// compose middleware takes many handlers, and applies each from left to right. Remember when someone said
-// you can only use one handler per route? Pfff.
+// composeMiddleware takes many handlers, returns a handler that takes a string,
+// and then applies first handler to this string, then applies second handler to the result, and so on...
+// Remember when someone said you can only use one handler per route? Pfff.
 func composeMiddleware(h ...Handler) Handler {
 	panic("not implemented")
 }
