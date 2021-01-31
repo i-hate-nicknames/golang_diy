@@ -1,4 +1,4 @@
-package main
+package slice
 
 type IntSlice interface {
 	Get(index int) (int, error)
