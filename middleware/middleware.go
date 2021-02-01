@@ -229,9 +229,8 @@ func makeAppender(s string) Middleware {
 // The only handler you need is identityHandler, everything else should be implemented by existing middlewares
 
 // top-level definitions so that tests can see them
-var quadHandler Handler
-var captH, capthBangH, revH, revBangH, revCaptH, captRevBangH Handler
-var questionizeMw Middleware
+var quadHandler, captH, capthBangH, revH, revBangH, revCaptH, captRevBangH Handler
+var questionizeMiddleware Middleware
 
 // uncomment and implement all assignments in this function
 func usingMWTask() {
@@ -365,6 +364,8 @@ type MyRouter struct {
 	// todo
 }
 
+var router Router
+
 // todo: implement router interface
 
 // 3.2 Using router
@@ -374,7 +375,6 @@ func routerTask() {
 	// Initialize router as your concrete implementation
 
 	// todo: uncomment and implement
-	// var router Router
 	// router = ...
 
 	// Define rootHandler as a function that does some processing

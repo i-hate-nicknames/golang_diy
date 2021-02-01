@@ -184,4 +184,75 @@ func TestMiddlewares(t *testing.T) {
 
 func TestUsingMiddlewares(t *testing.T) {
 
+	type test struct {
+		input, expected string
+	}
+
+	runHandlerTests := func(name string, h Handler, tests []test) {
+		t.Run(name, func(t *testing.T) {
+			for _, test := range tests {
+				if res := h(test.input); res != test.expected {
+					t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
+				}
+			}
+		})
+	}
+
+	quadTests := []test{
+		{"ab", "abababab"},
+		{"", ""},
+	}
+	runHandlerTests("quadHandler", quadHandler, quadTests)
+
+	captTests := []test{
+		{"", ""},
+		{"ab", "Ab"},
+		{"123", "123"},
+	}
+	runHandlerTests("captH", captH, captTests)
+
+	capthBangTests := []test{
+		{"ab", "Ab!"},
+		{"", "!"},
+	}
+	runHandlerTests("capthBangH", capthBangH, capthBangTests)
+
+	revTests := []test{
+		{"abc", "cba"},
+		{"", ""},
+	}
+	runHandlerTests("revH", revH, revTests)
+
+	revBangTests := []test{
+		{"ab", "ba!"},
+		{"", "!"},
+	}
+	runHandlerTests("revBangH", revBangH, revBangTests)
+
+	revCaptTests := []test{
+		{"ab", "Ba"},
+		{"", ""},
+	}
+	runHandlerTests("revCaptH", revCaptH, revCaptTests)
+
+	captRevBangTests := []test{
+		{"abc", "cbA!"},
+		{"", "!"},
+	}
+	runHandlerTests("captRevBangH", captRevBangH, captRevBangTests)
+
+	questionizeTests := []test{
+		{"abc", "abc?"},
+		{"", "?"},
+	}
+
+	t.Run("questionizeMiddleware", func(t *testing.T) {
+		identity := func(s string) string { return s }
+		h := questionizeMiddleware(identity)
+		for _, test := range questionizeTests {
+			if res := h(test.input); res != test.expected {
+				t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
+			}
+		}
+	})
 }
