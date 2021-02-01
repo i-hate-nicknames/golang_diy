@@ -184,6 +184,9 @@ func TestMiddlewares(t *testing.T) {
 
 func TestUsingMiddlewares(t *testing.T) {
 
+	identity := func(s string) string { return s }
+	double := func(s string) string { return s + s }
+
 	type test struct {
 		input, expected string
 	}
@@ -246,13 +249,27 @@ func TestUsingMiddlewares(t *testing.T) {
 		{"", "?"},
 	}
 
-	t.Run("questionizeMiddleware", func(t *testing.T) {
-		identity := func(s string) string { return s }
-		h := questionizeMiddleware(identity)
-		for _, test := range questionizeTests {
-			if res := h(test.input); res != test.expected {
-				t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
-			}
-		}
-	})
+	h := questionizeMiddleware(identity)
+	runHandlerTests("questionizeMiddleware", h, questionizeTests)
+
+	ellipsifyTests := []test{
+		{"abc", "abc..."},
+		{"", "..."},
+	}
+	runHandlerTests("ellipsifyHandler", ellipsifyHandler, ellipsifyTests)
+
+	orNotIdTests := []test{
+		{"abc", "abcor not?"},
+		{"", "or not?"},
+	}
+	h = orNotMiddleware(identity)
+	runHandlerTests("orNotMiddleware", h, orNotIdTests)
+
+	orNotDblTests := []test{
+		{"abc", "abcabcornot"},
+		{"a", "aaornot"},
+		{"", "or not?"},
+	}
+	h = orNotMiddleware(double)
+	runHandlerTests("orNotMiddleware", h, orNotDblTests)
 }

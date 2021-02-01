@@ -290,7 +290,9 @@ func usingMWTask() {
 // If you import raw functions from a library and make your own handlers with them, you would have to
 // decide where the logic should go.
 
-// TODO: move to tests, add definitions
+var ellipsifyHandler, doubtfulHandler Handler
+var orNotMiddleware Middleware
+
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
 
