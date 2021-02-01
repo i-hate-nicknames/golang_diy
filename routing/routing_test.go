@@ -14,7 +14,7 @@ type test struct {
 	input, expected string
 }
 
-func runHandlerTests(t, t *testing.T, name string, h Handler, tests []test) {
+func runHandlerTests(t *testing.T, name string, h Handler, tests []test) {
 	t.Run(name, func(t *testing.T) {
 		for _, test := range tests {
 			if res := h(test.input); res != test.expected {
@@ -24,7 +24,7 @@ func runHandlerTests(t, t *testing.T, name string, h Handler, tests []test) {
 	})
 }
 
-func runMWTests(t, t *testing.T, name string, initial Handler, mw Middleware, tests []test) {
+func runMWTests(t *testing.T, name string, initial Handler, mw Middleware, tests []test) {
 	h := mw(initial)
 	t.Run(name, func(t *testing.T) {
 		for _, test := range tests {
@@ -35,10 +35,14 @@ func runMWTests(t, t *testing.T, name string, initial Handler, mw Middleware, te
 	})
 }
 
-func runRouterTests(t, t *testing.T, name, path string, tests []test) {
+func runRouterTests(t *testing.T, name, path string, tests []test) {
 	t.Run(name, func(t *testing.T) {
 		for _, test := range tests {
-			if res := router.Match(path, test.input); res != test.expected {
+			res, err := router.Match(path, test.input)
+			if err != nil {
+				t.Errorf("input: %s, expected: %s, got error: %s", test.input, test.expected, err)
+			}
+			if res != test.expected {
 				t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
 			}
 		}
@@ -313,4 +317,9 @@ func TestRouter(t *testing.T) {
 		{"abcd", "dcbA"},
 	}
 	runRouterTests(t, "Router capitalize, then reverse", "/caprev", capRevMWTests)
+
+	res, err := router.Match("garbage text here")
+	if err == nil {
+		t.Errorf("Expected error to run on unregistered path, got result: %s", res)
+	}
 }
