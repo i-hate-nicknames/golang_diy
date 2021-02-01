@@ -1,4 +1,4 @@
-package middleware
+package routing
 
 // TODO: move most of the prose to markdown, leave only implementation-related text
 
