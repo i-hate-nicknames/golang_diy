@@ -14,98 +14,106 @@ type test struct {
 	input, expected string
 }
 
-func TestHandlers(t *testing.T) {
-
-	runHandlerTests := func(name string, h Handler, tests []test) {
-		t.Run(name, func(t *testing.T) {
-			for _, test := range tests {
-				if res := h(test.input); res != test.expected {
-					t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
-				}
+func runHandlerTests(t, t *testing.T, name string, h Handler, tests []test) {
+	t.Run(name, func(t *testing.T) {
+		for _, test := range tests {
+			if res := h(test.input); res != test.expected {
+				t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
 			}
-		})
-	}
+		}
+	})
+}
 
+func runMWTests(t, t *testing.T, name string, initial Handler, mw Middleware, tests []test) {
+	h := mw(initial)
+	t.Run(name, func(t *testing.T) {
+		for _, test := range tests {
+			if res := h(test.input); res != test.expected {
+				t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
+			}
+		}
+	})
+}
+
+func runRouterTests(t, t *testing.T, name, path string, tests []test) {
+	t.Run(name, func(t *testing.T) {
+		for _, test := range tests {
+			if res := router.Match(path, test.input); res != test.expected {
+				t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
+			}
+		}
+	})
+}
+
+func TestHandlers(t *testing.T) {
 	constTests := []test{
 		{"a", "kurwa"},
 		{"", "kurwa"},
 	}
-	runHandlerTests("constantHandler", constantHandler, constTests)
+	runHandlerTests(t, "constantHandler", constantHandler, constTests)
 
 	idTests := []test{
 		{"abc", "abc"},
 		{"", ""},
 	}
-	runHandlerTests("identityHandler", identityHandler, idTests)
+	runHandlerTests(t, "identityHandler", identityHandler, idTests)
 
 	abangTests := []test{
 		{"a", "a!"},
 		{"", "!"},
 	}
-	runHandlerTests("appendBangHandler", appendBangHandler, abangTests)
+	runHandlerTests(t, "appendBangHandler", appendBangHandler, abangTests)
 
 	captTests := []test{
 		{"a", "A"},
 		{"test", "Test"},
 		{"!!!", "!!!"},
 	}
-	runHandlerTests("captHandler", captHandler, captTests)
+	runHandlerTests(t, "captHandler", captHandler, captTests)
 
 	captBangTests := []test{
 		{"a", "A!"},
 		{"test", "Test!"},
 		{"!!!", "!!!!"},
 	}
-	runHandlerTests("captBangHandler", captBangHandler, captBangTests)
+	runHandlerTests(t, "captBangHandler", captBangHandler, captBangTests)
 
 	revTests := []test{
 		{"a", "a"},
 		{"", ""},
 		{"kurwa", "awruk"},
 	}
-	runHandlerTests("revHandler", revHandler, revTests)
+	runHandlerTests(t, "revHandler", revHandler, revTests)
 
 	revBangTests := []test{
 		{"a", "a!"},
 		{"", "!"},
 		{"kurwa", "awruk!"},
 	}
-	runHandlerTests("revBangHandler", revBangHandler, revBangTests)
+	runHandlerTests(t, "revBangHandler", revBangHandler, revBangTests)
 
 	revCaptTests := []test{
 		{"a", "A"},
 		{"", ""},
 		{"abc", "Cba"},
 	}
-	runHandlerTests("revCaptHandler", revCaptHandler, revCaptTests)
+	runHandlerTests(t, "revCaptHandler", revCaptHandler, revCaptTests)
 
 	captRevBangTests := []test{
 		{"a", "A!"},
 		{"", "!"},
 		{"abc", "cbA!"},
 	}
-	runHandlerTests("captRevBangHandler", captRevBangHandler, captRevBangTests)
+	runHandlerTests(t, "captRevBangHandler", captRevBangHandler, captRevBangTests)
 }
 
 func TestMiddlewares(t *testing.T) {
-
-	runMWTests := func(name string, initial Handler, mw Middleware, tests []test) {
-		h := mw(initial)
-		t.Run(name, func(t *testing.T) {
-			for _, test := range tests {
-				if res := h(test.input); res != test.expected {
-					t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
-				}
-			}
-		})
-	}
-
 	constTests := []test{
 		{"abc", "kurwa"},
 		{"", "kurwa"},
 	}
 
-	runMWTests("constMiddleware", identity, constMiddleware, constTests)
+	runMWTests(t, "constMiddleware", identity, constMiddleware, constTests)
 
 	capitalizeTestsId := []test{
 		{"abc", "Abc"},
@@ -117,8 +125,8 @@ func TestMiddlewares(t *testing.T) {
 		{"abc", "AbcAbc"},
 	}
 
-	runMWTests("capitalizeMiddleware", identity, capitalizeMiddleware, capitalizeTestsId)
-	runMWTests("capitalizeMiddleware", double, capitalizeMiddleware, capitalizeTestsDbl)
+	runMWTests(t, "capitalizeMiddleware", identity, capitalizeMiddleware, capitalizeTestsId)
+	runMWTests(t, "capitalizeMiddleware", double, capitalizeMiddleware, capitalizeTestsDbl)
 
 	bangifyTestsId := []test{
 		{"abc", "abc!"},
@@ -130,8 +138,8 @@ func TestMiddlewares(t *testing.T) {
 		{"abc", "abc!abc!"},
 	}
 
-	runMWTests("bangifyMiddleware", identity, bangifyMiddleware, bangifyTestsId)
-	runMWTests("bangifyMiddleware", double, bangifyMiddleware, bangifyTestsDbl)
+	runMWTests(t, "bangifyMiddleware", identity, bangifyMiddleware, bangifyTestsId)
+	runMWTests(t, "bangifyMiddleware", double, bangifyMiddleware, bangifyTestsDbl)
 
 	reverseTestsId := []test{
 		{"abc", "bca"},
@@ -143,8 +151,8 @@ func TestMiddlewares(t *testing.T) {
 		{"abc", "bcabca"},
 	}
 
-	runMWTests("reverseMiddleware", identity, reverseMiddleware, reverseTestsId)
-	runMWTests("reverseMiddleware", double, reverseMiddleware, reverseTestsDbl)
+	runMWTests(t, "reverseMiddleware", identity, reverseMiddleware, reverseTestsId)
+	runMWTests(t, "reverseMiddleware", double, reverseMiddleware, reverseTestsDbl)
 
 	composedIdsHandler := composeMiddleware(identity, identity, identity, identity)
 
@@ -164,8 +172,8 @@ func TestMiddlewares(t *testing.T) {
 	// for runMWTests
 	identityMiddleware := func(h Handler) Handler { return h }
 
-	runMWTests("composeMiddleware", composedIdsHandler, identityMiddleware, composeTestsId)
-	runMWTests("composeMiddleware", composeDoubles, identityMiddleware, composeTestsDbl)
+	runMWTests(t, "composeMiddleware", composedIdsHandler, identityMiddleware, composeTestsId)
+	runMWTests(t, "composeMiddleware", composeDoubles, identityMiddleware, composeTestsDbl)
 
 	appender := makeAppender("-a")
 
@@ -179,65 +187,54 @@ func TestMiddlewares(t *testing.T) {
 		{"abc", "abc-aabc-a"},
 	}
 
-	runMWTests("makeAppender", identity, appender, appenderTestsId)
-	runMWTests("makeAppender", double, appender, appenderTestsDbl)
+	runMWTests(t, "makeAppender", identity, appender, appenderTestsId)
+	runMWTests(t, "makeAppender", double, appender, appenderTestsDbl)
 
 }
 
 func TestUsingMiddlewares(t *testing.T) {
-
-	runHandlerTests := func(name string, h Handler, tests []test) {
-		t.Run(name, func(t *testing.T) {
-			for _, test := range tests {
-				if res := h(test.input); res != test.expected {
-					t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
-				}
-			}
-		})
-	}
-
 	quadTests := []test{
 		{"ab", "abababab"},
 		{"", ""},
 	}
-	runHandlerTests("quadHandler", quadHandler, quadTests)
+	runHandlerTests(t, "quadHandler", quadHandler, quadTests)
 
 	captTests := []test{
 		{"", ""},
 		{"ab", "Ab"},
 		{"123", "123"},
 	}
-	runHandlerTests("captH", captH, captTests)
+	runHandlerTests(t, "captH", captH, captTests)
 
 	capthBangTests := []test{
 		{"ab", "Ab!"},
 		{"", "!"},
 	}
-	runHandlerTests("capthBangH", capthBangH, capthBangTests)
+	runHandlerTests(t, "capthBangH", capthBangH, capthBangTests)
 
 	revTests := []test{
 		{"abc", "cba"},
 		{"", ""},
 	}
-	runHandlerTests("revH", revH, revTests)
+	runHandlerTests(t, "revH", revH, revTests)
 
 	revBangTests := []test{
 		{"ab", "ba!"},
 		{"", "!"},
 	}
-	runHandlerTests("revBangH", revBangH, revBangTests)
+	runHandlerTests(t, "revBangH", revBangH, revBangTests)
 
 	revCaptTests := []test{
 		{"ab", "Ba"},
 		{"", ""},
 	}
-	runHandlerTests("revCaptH", revCaptH, revCaptTests)
+	runHandlerTests(t, "revCaptH", revCaptH, revCaptTests)
 
 	captRevBangTests := []test{
 		{"abc", "cbA!"},
 		{"", "!"},
 	}
-	runHandlerTests("captRevBangH", captRevBangH, captRevBangTests)
+	runHandlerTests(t, "captRevBangH", captRevBangH, captRevBangTests)
 
 	questionizeTests := []test{
 		{"abc", "abc?"},
@@ -245,20 +242,20 @@ func TestUsingMiddlewares(t *testing.T) {
 	}
 
 	h := questionizeMiddleware(identity)
-	runHandlerTests("questionizeMiddleware", h, questionizeTests)
+	runHandlerTests(t, "questionizeMiddleware", h, questionizeTests)
 
 	ellipsifyTests := []test{
 		{"abc", "abc..."},
 		{"", "..."},
 	}
-	runHandlerTests("ellipsifyHandler", ellipsifyHandler, ellipsifyTests)
+	runHandlerTests(t, "ellipsifyHandler", ellipsifyHandler, ellipsifyTests)
 
 	orNotIdTests := []test{
 		{"abc", "abcor not?"},
 		{"", "or not?"},
 	}
 	h = orNotMiddleware(identity)
-	runHandlerTests("orNotMiddleware", h, orNotIdTests)
+	runHandlerTests(t, "orNotMiddleware", h, orNotIdTests)
 
 	orNotDblTests := []test{
 		{"abc", "abcabcornot"},
@@ -266,28 +263,17 @@ func TestUsingMiddlewares(t *testing.T) {
 		{"", "or not?"},
 	}
 	h = orNotMiddleware(double)
-	runHandlerTests("orNotMiddleware", h, orNotDblTests)
+	runHandlerTests(t, "orNotMiddleware", h, orNotDblTests)
 }
 
 func TestRouter(t *testing.T) {
-
-	runRouterTests := func(name, path string, tests []test) {
-		t.Run(name, func(t *testing.T) {
-			for _, test := range tests {
-				if res := router.Match(path, test.input); res != test.expected {
-					t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
-				}
-			}
-		})
-	}
-
 	router.RegisterHandler("/identity", identity)
 	idTests := []test{
 		{"a", "a"},
 		{"", ""},
 		{"12345", "12345"},
 	}
-	runRouterTests("identity handler", "/identity", idTests)
+	runRouterTests(t, "identity handler", "/identity", idTests)
 
 	router.RegisterHandler("/double", double)
 	doubleTests := []test{
@@ -295,7 +281,7 @@ func TestRouter(t *testing.T) {
 		{"", ""},
 		{"12345", "1234512345"},
 	}
-	runRouterTests("double handler", "/double", doubleTests)
+	runRouterTests(t, "double handler", "/double", doubleTests)
 
 	dblMw := func(h Handler) Handler { return func(s string) string { return h(s + s) } }
 
@@ -306,7 +292,7 @@ func TestRouter(t *testing.T) {
 		{"", ""},
 		{"12345", "1234512345"},
 	}
-	runRouterTests("identity handler", "/doubleMW", doubleMWTests)
+	runRouterTests(t, "identity handler", "/doubleMW", doubleMWTests)
 
 	router.UseMiddleware("/revcap", reverseMiddleware)
 	router.UseMiddleware("/revcap", capitalizeMiddleware)
@@ -316,7 +302,7 @@ func TestRouter(t *testing.T) {
 		{"123", "321"},
 		{"abcd", "Dcba"},
 	}
-	runRouterTests("Router reverse, then capitalize", "/revcap", revcapMWTests)
+	runRouterTests(t, "Router reverse, then capitalize", "/revcap", revcapMWTests)
 
 	router.UseMiddleware("/caprev", capitalizeMiddleware)
 	router.UseMiddleware("/caprev", reverseMiddleware)
@@ -326,5 +312,5 @@ func TestRouter(t *testing.T) {
 		{"123", "321"},
 		{"abcd", "dcbA"},
 	}
-	runRouterTests("Router capitalize, then reverse", "/caprev", capRevMWTests)
+	runRouterTests(t, "Router capitalize, then reverse", "/caprev", capRevMWTests)
 }
