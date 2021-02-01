@@ -2,11 +2,19 @@ package middleware
 
 import "testing"
 
-func TestHandlers(t *testing.T) {
+func identity(s string) string {
+	return s
+}
 
-	type test struct {
-		input, expected string
-	}
+func double(s string) string {
+	return s + s
+}
+
+type test struct {
+	input, expected string
+}
+
+func TestHandlers(t *testing.T) {
 
 	runHandlerTests := func(name string, h Handler, tests []test) {
 		t.Run(name, func(t *testing.T) {
@@ -80,12 +88,6 @@ func TestHandlers(t *testing.T) {
 }
 
 func TestMiddlewares(t *testing.T) {
-	type test struct {
-		input, expected string
-	}
-
-	identity := func(s string) string { return s }
-	double := func(s string) string { return s + s }
 
 	runMWTests := func(name string, initial Handler, mw Middleware, tests []test) {
 		h := mw(initial)
@@ -184,13 +186,6 @@ func TestMiddlewares(t *testing.T) {
 
 func TestUsingMiddlewares(t *testing.T) {
 
-	identity := func(s string) string { return s }
-	double := func(s string) string { return s + s }
-
-	type test struct {
-		input, expected string
-	}
-
 	runHandlerTests := func(name string, h Handler, tests []test) {
 		t.Run(name, func(t *testing.T) {
 			for _, test := range tests {
@@ -272,4 +267,64 @@ func TestUsingMiddlewares(t *testing.T) {
 	}
 	h = orNotMiddleware(double)
 	runHandlerTests("orNotMiddleware", h, orNotDblTests)
+}
+
+func TestRouter(t *testing.T) {
+
+	runRouterTests := func(name, path string, tests []test) {
+		t.Run(name, func(t *testing.T) {
+			for _, test := range tests {
+				if res := router.Match(path, test.input); res != test.expected {
+					t.Errorf("input: %s, expected: %s, got: %s", test.input, test.expected, res)
+				}
+			}
+		})
+	}
+
+	router.RegisterHandler("/identity", identity)
+	idTests := []test{
+		{"a", "a"},
+		{"", ""},
+		{"12345", "12345"},
+	}
+	runRouterTests("identity handler", "/identity", idTests)
+
+	router.RegisterHandler("/double", double)
+	doubleTests := []test{
+		{"a", "aa"},
+		{"", ""},
+		{"12345", "1234512345"},
+	}
+	runRouterTests("double handler", "/double", doubleTests)
+
+	dblMw := func(h Handler) Handler { return func(s string) string { return h(s + s) } }
+
+	router.UseMiddleware("/doubleMW", dblMw)
+	router.RegisterHandler("/doubleMW", identity)
+	doubleMWTests := []test{
+		{"a", "aa"},
+		{"", ""},
+		{"12345", "1234512345"},
+	}
+	runRouterTests("identity handler", "/doubleMW", doubleMWTests)
+
+	router.UseMiddleware("/revcap", reverseMiddleware)
+	router.UseMiddleware("/revcap", capitalizeMiddleware)
+	router.RegisterHandler("/revcap", identity)
+	revcapMWTests := []test{
+		{"", ""},
+		{"123", "321"},
+		{"abcd", "Dcba"},
+	}
+	runRouterTests("Router reverse, then capitalize", "/revcap", revcapMWTests)
+
+	router.UseMiddleware("/caprev", capitalizeMiddleware)
+	router.UseMiddleware("/caprev", reverseMiddleware)
+	router.RegisterHandler("/caprev", identity)
+	capRevMWTests := []test{
+		{"", ""},
+		{"123", "321"},
+		{"abcd", "dcbA"},
+	}
+	runRouterTests("Router capitalize, then reverse", "/caprev", capRevMWTests)
 }

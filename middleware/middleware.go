@@ -70,13 +70,15 @@ type Handler func(string) string
 // To follow this guide, do not change types of anything. Remove panics with your implementation
 // and run tests
 
+// 1. Handlers
+
 // douleHandler doubles its input
 // this is an example
 func doubleHandler(in string) string {
 	return in + in
 }
 
-// 1.1 Simple handlers
+// Simple handlers
 // Implement the following handlers:
 
 // a constant handler that ignores input and always returns a constant
@@ -100,7 +102,7 @@ func appendBangHandler(in string) string {
 	panic("not implemented")
 }
 
-// 1.2 Advanced handlers
+// Advanced handlers
 // Implement the following handlers using function definitions:
 // Here and further, capitalization is making first letter of the text to be uppercase
 // "test" -> "Test"
@@ -178,7 +180,7 @@ func doubleMiddleware(h Handler) Handler {
 // Question: what is the difference between double handler and double middleware?
 // Look at their type signatures, and consider how each can be used.
 
-// 2.1 Defining middlewares
+// Defining middlewares
 // Implement the following middlewares:
 
 // const middleware that returns a handler that ignores its input and always
@@ -270,7 +272,7 @@ func usingMWTask() {
 	// questionizeMw = ...
 }
 
-// 2.3 Pre and post middlewares
+// Pre and post middlewares
 // All middlewares that we defined before were "pre" middlewares. They first modify the input, and then call
 // a handler they were given on the result. This allows building a chain, such that for some middlewares
 // p, q, r and some initial handler h, we can apply them in order and produce a final handler h' = p(q(r(h))).
@@ -295,27 +297,18 @@ var orNotMiddleware Middleware
 
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
-
 	// todo: uncomment and implement
-	// var ellipsify Handler
 	// ellipsify = ...
 
-	// Define orNot middleware that returns a handler that first calls provided handler, and then appends
+	// orNot middleware returns a handler that first calls provided handler, and then appends
 	// "or not?" string to the end
-
 	// todo: uncomment and implement
-	// var orNotMw Middleware
 	// orNotMw = ...
 
 	// Obtain a handler that adds "...or not?" by using ellipsify with orNotMw.
 	// Observe that orNot has to be a "post" middleware in this case
-
 	// todo: uncomment and implement
-	// var doubtfulHandler Handler
 	// doubtfulHandler = ...
-
-	// todo: uncomment and test your handler
-	// fmt.Println(doubtfulHandler("test"))
 }
 
 // To sum up
@@ -352,61 +345,23 @@ type Router interface {
 	// Add middleware to the given path. A handler for this path will be modified by all
 	// the middlewares registered for this path, each in turn.
 	// Note: the order of registering middlewares affects the order of their application
+	// Middleware that is installed first should run first
 	UseMiddleware(path string, mw Middleware)
 
 	// Match given path, and run a handler that is registered under that path
-	// return error when there is no handler registered for the givne path
-	Match(path string, data string) error
+	// return error when there is no handler registered for the given path
+	// return result of running registered handler together with all registered
+	// middlewares, for the given path
+	Match(path string, data string) (string, error)
 }
 
 // 3.1 Implementing router
 // Implement router
 
-type MyRouter struct {
-	// todo
+type myRouter struct {
+	// todo: add fields as necessary
 }
 
 var router Router
 
 // todo: implement router interface
-
-// 3.2 Using router
-// Use router together with middlewares to check how it all works together
-// TODO: move to tests
-func routerTask() {
-	// Initialize router as your concrete implementation
-
-	// todo: uncomment and implement
-	// router = ...
-
-	// Define rootHandler as a function that does some processing
-
-	// todo: uncomment and implement
-	// var rootHandler Handler
-	// rootHandler = ...
-
-	// Register root handler under "/" path
-
-	// todo: uncomment when rootHandler is defined
-	// router.RegisterHandler("/", rootHandler)
-
-	// Test router root path with different data
-
-	// todo: uncomment
-	// router.Match("/", "some text")
-	// router.Match("/", "some other text")
-
-	// Register a path with middleware: add /revCapBangify path that reverses,
-	// capitalizes and adds "!" to the end of input strings
-
-	// todo: uncomment and implement
-	// router.UseMiddleware("/revCapBangify", ...)
-	// router.UseMiddleware("/revCapBangify", ...)
-	// router.RegisterHandler("/revCapBangify", identityHandler)
-
-	// Test /revCapBangify path
-
-	// todo: uncomment
-	// router.Match("/revCapBangify", "some text")
-	// router.Match("/revCapBangify", "some other text")
-}
