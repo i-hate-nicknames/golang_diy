@@ -38,7 +38,8 @@ func runMWTests(t *testing.T, name string, initial Handler, mw Middleware, tests
 func runRouterTests(t *testing.T, name, path string, tests []test) {
 	t.Run(name, func(t *testing.T) {
 		for _, test := range tests {
-			res, err := router.Match(path, test.input)
+			req := Request{Path: path, Data: test.input}
+			res, err := router.Match(req)
 			if err != nil {
 				t.Errorf("input: %s, expected: %s, got error: %s", test.input, test.expected, err)
 			}
@@ -318,7 +319,7 @@ func TestRouter(t *testing.T) {
 	}
 	runRouterTests(t, "Router capitalize, then reverse", "/caprev", capRevMWTests)
 
-	res, err := router.Match("garbage text here")
+	res, err := router.Match(Request{Path: "garbage text here", Data: ""})
 	if err == nil {
 		t.Errorf("Expected error to run on unregistered path, got result: %s", res)
 	}

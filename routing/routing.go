@@ -352,7 +352,7 @@ type Router interface {
 	// return error when there is no handler registered for the given path
 	// return result of running registered handler together with all registered
 	// middlewares, for the given path
-	Match(path string, data string) (string, error)
+	Match(request Request) (string, error)
 }
 
 // 3.1 Implementing router
