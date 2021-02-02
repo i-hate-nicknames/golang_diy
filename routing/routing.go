@@ -131,7 +131,7 @@ func revBangHandler(in string) string {
 	panic("not implemented")
 }
 
-// revCaptHandler reverses order of letters in every word of the input
+// revCaptHandler reverses the input and then capitalizes it
 func revCaptHandler(in string) string {
 	panic("not implemented")
 }
@@ -231,7 +231,7 @@ func makeAppender(s string) Middleware {
 // The only handler you need is identityHandler, everything else should be implemented by existing middlewares
 
 // top-level definitions so that tests can see them
-var quadHandler, captH, capthBangH, revH, revBangH, revCaptH, captRevBangH Handler
+var quadHandler, captH, captBangH, revH, revBangH, revCaptH, captRevBangH Handler
 var questionizeMiddleware Middleware
 
 // uncomment and implement all assignments in this function
@@ -248,7 +248,7 @@ func usingMWTask() {
 
 	// Capitalize Bang handler capitalizes its input  and adds "!" to the end
 	// todo: uncomment and implement
-	// captBang = ...
+	// captBangH = ...
 
 	// Reverse handler reverses its input
 	// todo: uncomment and implement
@@ -298,12 +298,12 @@ var orNotMiddleware Middleware
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
 	// todo: uncomment and implement
-	// ellipsify = ...
+	// ellipsifyHandler = ...
 
 	// orNot middleware returns a handler that first calls provided handler, and then appends
 	// "or not?" string to the end
 	// todo: uncomment and implement
-	// orNotMw = ...
+	// orNotMiddleware = ...
 
 	// Obtain a handler that adds "...or not?" by using ellipsify with orNotMw.
 	// Observe that orNot has to be a "post" middleware in this case
