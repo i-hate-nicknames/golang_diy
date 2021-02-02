@@ -211,11 +211,11 @@ func TestUsingMiddlewares(t *testing.T) {
 	}
 	runHandlerTests(t, "captH", captH, captTests)
 
-	capthBangTests := []test{
+	captBangTests := []test{
 		{"ab", "Ab!"},
 		{"", "!"},
 	}
-	runHandlerTests(t, "capthBangH", capthBangH, capthBangTests)
+	runHandlerTests(t, "captBangH", captBangH, captBangTests)
 
 	revTests := []test{
 		{"abc", "cba"},
