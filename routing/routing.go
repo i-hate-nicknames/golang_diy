@@ -358,10 +358,13 @@ type Router interface {
 // 3.1 Implementing router
 // Implement router
 
-type myRouter struct {
-	// todo: add fields as necessary
-}
-
 var router Router
 
-// todo: implement router interface
+// todo: define your own type that implements Router interface
+
+func routerTask() {
+
+	// todo: uncomment and assign router to an instance of your type
+	// that implements Router interface
+	// router = ...
+}
