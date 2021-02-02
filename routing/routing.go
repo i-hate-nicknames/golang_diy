@@ -269,7 +269,7 @@ func usingMWTask() {
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
 	// todo: uncomment and implement
-	// questionizeMw = ...
+	// questionizeMiddleware = ...
 }
 
 // Pre and post middlewares
