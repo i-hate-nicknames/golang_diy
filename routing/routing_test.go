@@ -139,7 +139,7 @@ func TestMiddlewares(t *testing.T) {
 	}
 
 	bangifyTestsDbl := []test{
-		{"", ""},
+		{"", "!!"},
 		{"abc", "abc!abc!"},
 	}
 
@@ -147,13 +147,13 @@ func TestMiddlewares(t *testing.T) {
 	runMWTests(t, "bangifyMiddleware", double, bangifyMiddleware, bangifyTestsDbl)
 
 	reverseTestsId := []test{
-		{"abc", "bca"},
+		{"abc", "cba"},
 		{"", ""},
 	}
 
 	reverseTestsDbl := []test{
 		{"", ""},
-		{"abc", "bcabca"},
+		{"abc", "cbacba"},
 	}
 
 	runMWTests(t, "reverseMiddleware", identity, reverseMiddleware, reverseTestsId)
@@ -198,6 +198,7 @@ func TestMiddlewares(t *testing.T) {
 }
 
 func TestUsingMiddlewares(t *testing.T) {
+	usingMWTask()
 	quadTests := []test{
 		{"ab", "abababab"},
 		{"", ""},
@@ -249,6 +250,8 @@ func TestUsingMiddlewares(t *testing.T) {
 	h := questionizeMiddleware(identity)
 	runHandlerTests(t, "questionizeMiddleware", h, questionizeTests)
 
+	postMiddlewareTask()
+
 	ellipsifyTests := []test{
 		{"abc", "abc..."},
 		{"", "..."},
@@ -263,8 +266,8 @@ func TestUsingMiddlewares(t *testing.T) {
 	runHandlerTests(t, "orNotMiddleware", h, orNotIdTests)
 
 	orNotDblTests := []test{
-		{"abc", "abcabcornot"},
-		{"a", "aaornot"},
+		{"abc", "abcabcor not?"},
+		{"a", "aaor not?"},
 		{"", "or not?"},
 	}
 	h = orNotMiddleware(double)
@@ -272,6 +275,7 @@ func TestUsingMiddlewares(t *testing.T) {
 }
 
 func TestRouter(t *testing.T) {
+	routerTask()
 	router.RegisterHandler("/identity", identity)
 	idTests := []test{
 		{"a", "a"},
