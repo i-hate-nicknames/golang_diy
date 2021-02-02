@@ -207,7 +207,7 @@ func reverseMiddleware(h Handler) Handler {
 // composeMiddleware takes many handlers, returns a handler that takes a string,
 // and then applies first handler to this string, then applies second handler to the result, and so on...
 // Remember when someone said you can only use one handler per route? Pfff.
-func composeMiddleware(h ...Handler) Handler {
+func composeMiddleware(hs ...Handler) Handler {
 	panic("not implemented")
 }
 
