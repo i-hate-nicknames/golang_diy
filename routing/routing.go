@@ -120,6 +120,11 @@ func appendBangHandler(in string) string {
 
 // captHandler capitalizes input
 func captHandler(in string) string {
+
+	if len(in) < 1 {
+		return in
+	}
+
 	asRunes := []rune(in)
 	asRunes[0] = unicode.ToUpper(asRunes[0])
 
@@ -143,7 +148,10 @@ func revBangHandler(in string) string {
 
 // revCaptHandler reverses the input and then capitalizes it
 func revCaptHandler(in string) string {
-	panic("not implemented")
+	reversed := reverseString(in)
+
+	// return reversed
+	return captHandler(reversed)
 }
 
 // revCapBangHandler: capitalizes input, then reverses it and then adds "!" to the end
@@ -380,6 +388,11 @@ func routerTask() {
 }
 
 func reverseString(in string) string {
+
+	if len(in) < 1 {
+		return in
+	}
+
 	var sb strings.Builder
 	runeSlice := []rune(in)
 	len := len(runeSlice)
