@@ -205,12 +205,18 @@ func doubleMiddleware(h Handler) Handler {
 // const middleware that returns a handler that ignores its input and always
 // returns string "kurwa"
 func constMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		const STR = "kurwa"
+
+		return h(STR)
+	})
 }
 
 // capitalizeMiddleware returns a handler that capitalizes input and then calls given handler on the result
 func capitalizeMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(captHandler(in))
+	})
 }
 
 // bangifyMiddleware returns a handler that adds a "!" to the end of its input and then calls given handler on the result
