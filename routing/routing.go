@@ -1,5 +1,10 @@
 package routing
 
+import (
+	"strings"
+	"unicode"
+)
+
 // TODO: move most of the prose to markdown, leave only implementation-related text
 
 // This guide walks through the implementation of a simple routing system, that is often used in
@@ -85,21 +90,23 @@ func doubleHandler(in string) string {
 // constantHandler("a") -> "kurwa"
 // constantHandler("b") -> "kurwa"
 func constantHandler(in string) string {
-	panic("not implemented")
+	const PERMANENT = "kurwa"
+
+	return PERMANENT
 }
 
 // an identity handler that returns input as output
 // identityHandler("a") -> "a"
 // identityHandler("b") -> "b"
 func identityHandler(in string) string {
-	panic("not implemented")
+	return in
 }
 
 // a handler that appends an exclamation mark to input:
 // h("a") -> "a!"
 // h("b") -> "b!"
 func appendBangHandler(in string) string {
-	panic("not implemented")
+	return in + "!"
 }
 
 // Advanced handlers
@@ -113,17 +120,20 @@ func appendBangHandler(in string) string {
 
 // captHandler capitalizes input
 func captHandler(in string) string {
-	panic("not implemented")
+	asRunes := []rune(in)
+	asRunes[0] = unicode.ToUpper(asRunes[0])
+
+	return string(asRunes)
 }
 
 // captBangHandler capitalizes input and adds "!" to the end
 func captBangHandler(in string) string {
-	panic("not implemented")
+	return captHandler(in) + "!"
 }
 
 // revHandler reverses input
 func revHandler(in string) string {
-	panic("not implemented")
+	return reverseString(in)
 }
 
 // revBangHandler reverses input and adds "!" to the end
@@ -367,4 +377,16 @@ func routerTask() {
 	// todo: uncomment and assign router to an instance of your type
 	// that implements Router interface
 	// router = ...
+}
+
+func reverseString(in string) string {
+	var sb strings.Builder
+	runeSlice := []rune(in)
+	len := len(runeSlice)
+
+	for i := len - 1; i >= 0; i-- {
+		sb.WriteRune(runeSlice[i])
+	}
+
+	return sb.String()
 }
