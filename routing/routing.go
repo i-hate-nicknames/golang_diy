@@ -150,13 +150,14 @@ func revBangHandler(in string) string {
 func revCaptHandler(in string) string {
 	reversed := reverseString(in)
 
-	// return reversed
 	return captHandler(reversed)
 }
 
 // revCapBangHandler: capitalizes input, then reverses it and then adds "!" to the end
 func captRevBangHandler(in string) string {
-	panic("not implemented")
+	capitalised := captHandler(in)
+
+	return revBangHandler(capitalised)
 }
 
 // 2. Middlewares
