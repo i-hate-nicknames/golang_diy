@@ -138,7 +138,7 @@ func revHandler(in string) string {
 
 // revBangHandler reverses input and adds "!" to the end
 func revBangHandler(in string) string {
-	panic("not implemented")
+	return reverseString(in) + "!"
 }
 
 // revCaptHandler reverses the input and then capitalizes it
