@@ -221,7 +221,9 @@ func capitalizeMiddleware(h Handler) Handler {
 
 // bangifyMiddleware returns a handler that adds a "!" to the end of its input and then calls given handler on the result
 func bangifyMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(appendBangHandler(in))
+	})
 }
 
 // reverseMiddleware returns a handler that reverses its input and then calls given handler on the result
