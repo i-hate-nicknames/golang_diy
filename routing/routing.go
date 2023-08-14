@@ -228,7 +228,9 @@ func bangifyMiddleware(h Handler) Handler {
 
 // reverseMiddleware returns a handler that reverses its input and then calls given handler on the result
 func reverseMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(revHandler(in))
+	})
 }
 
 // composeMiddleware takes many handlers, returns a handler that takes a string,
