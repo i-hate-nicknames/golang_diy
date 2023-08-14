@@ -237,7 +237,13 @@ func reverseMiddleware(h Handler) Handler {
 // and then applies first handler to this string, then applies second handler to the result, and so on...
 // Remember when someone said you can only use one handler per route? Pfff.
 func composeMiddleware(hs ...Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		for _, h := range hs {
+			h(in)
+		}
+
+		return in
+	})
 }
 
 // Middleware factory: implement a function that returns a middleware.
