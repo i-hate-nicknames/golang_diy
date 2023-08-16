@@ -307,7 +307,7 @@ func usingMWTask() {
 
 	// Capitalize Reverse Bang handler capitalizes its input, then reverses it
 	// and then adds "!" to the end
-	// captRevBangH = ...
+	captRevBangH = capitalizeMiddleware(reverseMiddleware(bangifyMiddleware(identityHandler)))
 
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
