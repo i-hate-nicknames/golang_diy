@@ -341,7 +341,7 @@ var orNotMiddleware Middleware
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
 	// todo: uncomment and implement
-	// ellipsifyHandler = ...
+	ellipsifyHandler = Handler(func(s string) string { return s + "..." })
 
 	// orNot middleware returns a handler that first calls provided handler, and then appends
 	// "or not?" string to the end
