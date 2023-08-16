@@ -251,8 +251,10 @@ func composeMiddleware(hs ...Handler) Handler {
 // return a middleware that will return a handler that will append s
 // to every input and pass the result to the original handler
 func makeAppender(s string) Middleware {
-	return Middleware(func(in string) string {
-		return in + s
+	return Middleware(func(h Handler) Handler {
+		return Handler(func(in string) string {
+			return h(in + s)
+		})
 	})
 }
 
@@ -276,11 +278,11 @@ func usingMWTask() {
 	// a handler that repeats its input four times
 
 	// todo: uncomment and implement
-	// quadHandler = ...
+	quadHandler = doubleMiddleware(doubleMiddleware(identityHandler))
 
 	// Capitalize handler capitalizes its input
 	// todo: uncomment and implement
-	// captH = ...
+	captH = capitalizeMiddleware(identityHandler)
 
 	// Capitalize Bang handler capitalizes its input  and adds "!" to the end
 	// todo: uncomment and implement
