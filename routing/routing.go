@@ -251,8 +251,9 @@ func composeMiddleware(hs ...Handler) Handler {
 // return a middleware that will return a handler that will append s
 // to every input and pass the result to the original handler
 func makeAppender(s string) Middleware {
-	// todo: implement
-	panic("not implemented")
+	return Middleware(func(in string) string {
+		return in + s
+	})
 }
 
 // Middlewares are used by routing system, to mix in functionality. However, to understand them
