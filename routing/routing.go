@@ -291,11 +291,11 @@ func usingMWTask() {
 
 	// Capitalize Bang handler capitalizes its input  and adds "!" to the end
 	// todo: uncomment and implement
-	// captBangH = ...
+	captBangH = capitalizeMiddleware(bangifyMiddleware(identityHandler))
 
 	// Reverse handler reverses its input
 	// todo: uncomment and implement
-	// revH = ...
+	revH = reverseMiddleware(identityHandler)
 
 	// Reverse Bang handler reverses its input and then adds "!" to the end
 	// todo: uncomment and implement
