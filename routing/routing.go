@@ -355,7 +355,7 @@ func postMiddlewareTask() {
 	// Obtain a handler that adds "...or not?" by using ellipsify with orNotMw.
 	// Observe that orNot has to be a "post" middleware in this case
 	// todo: uncomment and implement
-	// doubtfulHandler = ...
+	doubtfulHandler = orNotMiddleware(ellipsifyHandler)
 }
 
 // To sum up
