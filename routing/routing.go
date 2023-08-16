@@ -238,11 +238,16 @@ func reverseMiddleware(h Handler) Handler {
 // Remember when someone said you can only use one handler per route? Pfff.
 func composeMiddleware(hs ...Handler) Handler {
 	return Handler(func(in string) string {
-		for _, h := range hs {
-			h(in)
+		var res string
+		for i, h := range hs {
+			if i == 0 {
+				res = h(in)
+			} else {
+				res = h(res)
+			}
 		}
 
-		return in
+		return res
 	})
 }
 
