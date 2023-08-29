@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"fmt"
 	"strings"
 	"unicode"
 )
@@ -407,13 +408,72 @@ type Router interface {
 
 var router Router
 
-// todo: define your own type that implements Router interface
+type SimpleRouter struct {
+	paths map[string]*pathHandler
+}
+
+type pathHandler struct {
+	mws []Middleware
+	h   Handler
+}
+
+func NewRouter() *SimpleRouter {
+	paths := make(map[string]*pathHandler, 0)
+
+	return &SimpleRouter{paths: paths}
+}
+
+func (r *SimpleRouter) RegisterHandler(path string, h Handler) {
+	ph := r.getHandlersByPath(path)
+	mwsLen := len(ph.mws)
+	registeredHandler := h
+
+	for i := mwsLen - 1; i < 0; i-- {
+		mw := ph.mws[i]
+		registeredHandler = mw(registeredHandler)
+	}
+
+	ph.h = registeredHandler
+}
+
+func (r *SimpleRouter) UseMiddleware(path string, mw Middleware) {
+	ph := r.getHandlersByPath(path)
+
+	ph.mws = append(ph.mws, mw)
+}
+
+func (r *SimpleRouter) Match(req Request) (string, error) {
+	path := req.Path
+	ph, ok := r.paths[path]
+
+	if !ok {
+		return "", fmt.Errorf("path %v does not registered", path)
+	}
+
+	rs := ph.h(req.Data)
+
+	return rs, nil
+
+}
+
+func (r *SimpleRouter) getHandlersByPath(path string) *pathHandler {
+	ph, ok := r.paths[path]
+
+	if !ok {
+		ph := &pathHandler{}
+		mws := make([]Middleware, 0)
+		ph.mws = mws
+	}
+
+	return ph
+}
 
 func routerTask() {
-
-	// todo: uncomment and assign router to an instance of your type
-	// that implements Router interface
-	// router = ...
+	router = NewRouter()
+	router.RegisterHandler("/bangCapReverse", identityHandler)
+	router.UseMiddleware("/bangCapReverse", bangifyMiddleware)
+	router.UseMiddleware("/bangCapReverse", capitalizeMiddleware)
+	router.UseMiddleware("/bangCapReverse", reverseMiddleware)
 }
 
 func reverseString(in string) string {
