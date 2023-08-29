@@ -276,6 +276,7 @@ func TestUsingMiddlewares(t *testing.T) {
 
 func TestRouter(t *testing.T) {
 	routerTask()
+
 	router.RegisterHandler("/identity", identity)
 	idTests := []test{
 		{"a", "a"},

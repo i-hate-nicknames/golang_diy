@@ -406,8 +406,6 @@ type Router interface {
 // 3.1 Implementing router
 // Implement router
 
-var router Router
-
 type SimpleRouter struct {
 	paths map[string]*pathHandler
 }
@@ -428,7 +426,9 @@ func (r *SimpleRouter) RegisterHandler(path string, h Handler) {
 	mwsLen := len(ph.mws)
 	registeredHandler := h
 
-	for i := mwsLen - 1; i < 0; i-- {
+	fmt.Println(registeredHandler)
+
+	for i := mwsLen - 1; i >= 0; i-- {
 		mw := ph.mws[i]
 		registeredHandler = mw(registeredHandler)
 	}
@@ -460,20 +460,33 @@ func (r *SimpleRouter) getHandlersByPath(path string) *pathHandler {
 	ph, ok := r.paths[path]
 
 	if !ok {
-		ph := &pathHandler{}
+		ph = &pathHandler{}
 		mws := make([]Middleware, 0)
 		ph.mws = mws
+		r.paths[path] = ph
 	}
 
 	return ph
 }
 
 func routerTask() {
-	router = NewRouter()
-	router.RegisterHandler("/bangCapReverse", identityHandler)
+	req := Request{
+		Path: "/bangCapReverse",
+		Data: "lorem is not ipsum",
+	}
+	router := NewRouter()
+
+	router.UseMiddleware("/bangCapReverse", bangifyMiddleware)
 	router.UseMiddleware("/bangCapReverse", bangifyMiddleware)
 	router.UseMiddleware("/bangCapReverse", capitalizeMiddleware)
+	router.UseMiddleware("/bangCapReverse", capitalizeMiddleware)
 	router.UseMiddleware("/bangCapReverse", reverseMiddleware)
+	router.UseMiddleware("/bangCapReverse", reverseMiddleware)
+	router.RegisterHandler("/bangCapReverse", identityHandler)
+
+	res, err := router.Match(req)
+	fmt.Println(res)
+	fmt.Println(err)
 }
 
 func reverseString(in string) string {
