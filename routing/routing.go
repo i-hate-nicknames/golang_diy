@@ -1,5 +1,10 @@
 package routing
 
+import (
+	"fmt"
+	"unicode"
+)
+
 // TODO: move most of the prose to markdown, leave only implementation-related text
 
 // This guide walks through the implementation of a simple routing system, that is often used in
@@ -85,21 +90,23 @@ func doubleHandler(in string) string {
 // constantHandler("a") -> "kurwa"
 // constantHandler("b") -> "kurwa"
 func constantHandler(in string) string {
-	panic("not implemented")
+	const PERMANENT = "kurwa"
+
+	return PERMANENT
 }
 
 // an identity handler that returns input as output
 // identityHandler("a") -> "a"
 // identityHandler("b") -> "b"
 func identityHandler(in string) string {
-	panic("not implemented")
+	return in
 }
 
 // a handler that appends an exclamation mark to input:
 // h("a") -> "a!"
 // h("b") -> "b!"
 func appendBangHandler(in string) string {
-	panic("not implemented")
+	return in + "!"
 }
 
 // Advanced handlers
@@ -113,32 +120,44 @@ func appendBangHandler(in string) string {
 
 // captHandler capitalizes input
 func captHandler(in string) string {
-	panic("not implemented")
+
+	if len(in) < 1 {
+		return in
+	}
+
+	asRunes := []rune(in)
+	asRunes[0] = unicode.ToUpper(asRunes[0])
+
+	return string(asRunes)
 }
 
 // captBangHandler capitalizes input and adds "!" to the end
 func captBangHandler(in string) string {
-	panic("not implemented")
+	return captHandler(in) + "!"
 }
 
 // revHandler reverses input
 func revHandler(in string) string {
-	panic("not implemented")
+	return reverseString(in)
 }
 
 // revBangHandler reverses input and adds "!" to the end
 func revBangHandler(in string) string {
-	panic("not implemented")
+	return reverseString(in) + "!"
 }
 
 // revCaptHandler reverses the input and then capitalizes it
 func revCaptHandler(in string) string {
-	panic("not implemented")
+	reversed := reverseString(in)
+
+	return captHandler(reversed)
 }
 
 // revCapBangHandler: capitalizes input, then reverses it and then adds "!" to the end
 func captRevBangHandler(in string) string {
-	panic("not implemented")
+	capitalised := captHandler(in)
+
+	return revBangHandler(capitalised)
 }
 
 // 2. Middlewares
@@ -186,29 +205,50 @@ func doubleMiddleware(h Handler) Handler {
 // const middleware that returns a handler that ignores its input and always
 // returns string "kurwa"
 func constMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		const STR = "kurwa"
+
+		return h(STR)
+	})
 }
 
 // capitalizeMiddleware returns a handler that capitalizes input and then calls given handler on the result
 func capitalizeMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(captHandler(in))
+	})
 }
 
 // bangifyMiddleware returns a handler that adds a "!" to the end of its input and then calls given handler on the result
 func bangifyMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(appendBangHandler(in))
+	})
 }
 
 // reverseMiddleware returns a handler that reverses its input and then calls given handler on the result
 func reverseMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		return h(revHandler(in))
+	})
 }
 
 // composeMiddleware takes many handlers, returns a handler that takes a string,
 // and then applies first handler to this string, then applies second handler to the result, and so on...
 // Remember when someone said you can only use one handler per route? Pfff.
 func composeMiddleware(hs ...Handler) Handler {
-	panic("not implemented")
+	return Handler(func(in string) string {
+		var res string
+		for i, h := range hs {
+			if i == 0 {
+				res = h(in)
+			} else {
+				res = h(res)
+			}
+		}
+
+		return res
+	})
 }
 
 // Middleware factory: implement a function that returns a middleware.
@@ -216,8 +256,11 @@ func composeMiddleware(hs ...Handler) Handler {
 // return a middleware that will return a handler that will append s
 // to every input and pass the result to the original handler
 func makeAppender(s string) Middleware {
-	// todo: implement
-	panic("not implemented")
+	return Middleware(func(h Handler) Handler {
+		return Handler(func(in string) string {
+			return h(in + s)
+		})
+	})
 }
 
 // Middlewares are used by routing system, to mix in functionality. However, to understand them
@@ -240,36 +283,36 @@ func usingMWTask() {
 	// a handler that repeats its input four times
 
 	// todo: uncomment and implement
-	// quadHandler = ...
+	quadHandler = doubleMiddleware(doubleMiddleware(identityHandler))
 
 	// Capitalize handler capitalizes its input
 	// todo: uncomment and implement
-	// captH = ...
+	captH = capitalizeMiddleware(identityHandler)
 
 	// Capitalize Bang handler capitalizes its input  and adds "!" to the end
 	// todo: uncomment and implement
-	// captBangH = ...
+	captBangH = capitalizeMiddleware(bangifyMiddleware(identityHandler))
 
 	// Reverse handler reverses its input
 	// todo: uncomment and implement
-	// revH = ...
+	revH = reverseMiddleware(identityHandler)
 
 	// Reverse Bang handler reverses its input and then adds "!" to the end
 	// todo: uncomment and implement
-	// revBangH = ...
+	revBangH = reverseMiddleware(bangifyMiddleware(identityHandler))
 
 	// Reverse Capitalize handler reverses its input and then capitalizes it
 	// todo: uncomment and implement
-	// revCaptH = ...
+	revCaptH = reverseMiddleware(capitalizeMiddleware(identityHandler))
 
 	// Capitalize Reverse Bang handler capitalizes its input, then reverses it
 	// and then adds "!" to the end
-	// captRevBangH = ...
+	captRevBangH = capitalizeMiddleware(reverseMiddleware(bangifyMiddleware(identityHandler)))
 
 	// Implement questionize middleware using makeAppender. This middleware
 	// should append "?" to input before calling passed handler
 	// todo: uncomment and implement
-	// questionizeMiddleware = ...
+	questionizeMiddleware = makeAppender("?")
 }
 
 // Pre and post middlewares
@@ -298,17 +341,21 @@ var orNotMiddleware Middleware
 func postMiddlewareTask() {
 	// Create a handler that adds "..." to the end of its input
 	// todo: uncomment and implement
-	// ellipsifyHandler = ...
+	ellipsifyHandler = Handler(func(s string) string { return s + "..." })
 
 	// orNot middleware returns a handler that first calls provided handler, and then appends
 	// "or not?" string to the end
 	// todo: uncomment and implement
-	// orNotMiddleware = ...
+	orNotMiddleware = Middleware(func(h Handler) Handler {
+		return Handler(func(s string) string {
+			return h(s) + "or not?"
+		})
+	})
 
 	// Obtain a handler that adds "...or not?" by using ellipsify with orNotMw.
 	// Observe that orNot has to be a "post" middleware in this case
 	// todo: uncomment and implement
-	// doubtfulHandler = ...
+	doubtfulHandler = orNotMiddleware(ellipsifyHandler)
 }
 
 // To sum up
@@ -358,13 +405,93 @@ type Router interface {
 // 3.1 Implementing router
 // Implement router
 
-var router Router
+type SimpleRouter struct {
+	paths map[string]*pathHandler
+}
 
-// todo: define your own type that implements Router interface
+type pathHandler struct {
+	mws []Middleware
+	h   Handler
+}
+
+func NewRouter() *SimpleRouter {
+	paths := make(map[string]*pathHandler, 0)
+
+	return &SimpleRouter{paths: paths}
+}
+
+func (r *SimpleRouter) RegisterHandler(path string, h Handler) {
+	ph := r.getHandlersByPath(path)
+	mwsLen := len(ph.mws)
+	registeredHandler := h
+
+	for i := mwsLen - 1; i >= 0; i-- {
+		mw := ph.mws[i]
+		registeredHandler = mw(registeredHandler)
+	}
+
+	ph.h = registeredHandler
+}
+
+func (r *SimpleRouter) UseMiddleware(path string, mw Middleware) {
+	ph := r.getHandlersByPath(path)
+
+	ph.mws = append(ph.mws, mw)
+}
+
+func (r *SimpleRouter) Match(req Request) (string, error) {
+	path := req.Path
+	ph, ok := r.paths[path]
+
+	if !ok {
+		return "", fmt.Errorf("path %v does not registered", path)
+	}
+
+	rs := ph.h(req.Data)
+
+	return rs, nil
+
+}
+
+func (r *SimpleRouter) getHandlersByPath(path string) *pathHandler {
+	ph, ok := r.paths[path]
+
+	if !ok {
+		ph = &pathHandler{}
+		mws := make([]Middleware, 0)
+		ph.mws = mws
+		r.paths[path] = ph
+	}
+
+	return ph
+}
 
 func routerTask() {
+	req := Request{
+		Path: "/bangCapReverse",
+		Data: "lorem is not ipsum",
+	}
+	router := NewRouter()
 
-	// todo: uncomment and assign router to an instance of your type
-	// that implements Router interface
-	// router = ...
+	router.UseMiddleware("/bangCapReverse", bangifyMiddleware)
+	router.UseMiddleware("/bangCapReverse", bangifyMiddleware)
+	router.UseMiddleware("/bangCapReverse", capitalizeMiddleware)
+	router.UseMiddleware("/bangCapReverse", capitalizeMiddleware)
+	router.UseMiddleware("/bangCapReverse", reverseMiddleware)
+	router.UseMiddleware("/bangCapReverse", reverseMiddleware)
+	router.RegisterHandler("/bangCapReverse", identityHandler)
+
+	res, err := router.Match(req)
+	fmt.Println(res)
+	fmt.Println(err)
+}
+
+func reverseString(in string) string {
+	runes := []rune(in)
+
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	return string(runes)
 }
