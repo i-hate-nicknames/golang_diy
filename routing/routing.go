@@ -2,7 +2,6 @@ package routing
 
 import (
 	"fmt"
-	"strings"
 	"unicode"
 )
 
@@ -426,8 +425,6 @@ func (r *SimpleRouter) RegisterHandler(path string, h Handler) {
 	mwsLen := len(ph.mws)
 	registeredHandler := h
 
-	fmt.Println(registeredHandler)
-
 	for i := mwsLen - 1; i >= 0; i-- {
 		mw := ph.mws[i]
 		registeredHandler = mw(registeredHandler)
@@ -490,18 +487,11 @@ func routerTask() {
 }
 
 func reverseString(in string) string {
+	runes := []rune(in)
 
-	if len(in) < 1 {
-		return in
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
 	}
 
-	var sb strings.Builder
-	runeSlice := []rune(in)
-	len := len(runeSlice)
-
-	for i := len - 1; i >= 0; i-- {
-		sb.WriteRune(runeSlice[i])
-	}
-
-	return sb.String()
+	return string(runes)
 }
